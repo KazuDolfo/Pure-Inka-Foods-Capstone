@@ -1,0 +1,19 @@
+// Paleta de Colores Corporativos
+$inkapt-dark-green: #489C0F;
+$inkapt-orange-accent: #E88717;
+$inkapt-orange-hover: #d1750e;
+$inkapt-dark-text: #34495e;
+$inkapt-light-green-bg: #e9f5e9;
+
+// Grises
+$inkapt-gray-border: #e0e0e0;
+$light-gray-bg: #fcfcfc;
+
+// Paleta Semántica (reemplazando variables de Bootstrap si es necesario)
+$primary: $inkapt-orange-accent;
+$success: $inkapt-dark-green;
+$dark: $inkapt-dark-text;
+
+// Tamaños y Bordes
+$border-radius-default: 8px;
+$border-radius-large: 12px;

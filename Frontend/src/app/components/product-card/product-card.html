@@ -1,0 +1,64 @@
+<div class="product-card h-100 d-flex flex-column position-relative">
+  <div class="product-image-wrapper position-relative overflow-hidden">
+    <img
+      [src]="getImageUrl()"
+      [alt]="product.name || 'Producto'"
+      class="img-fluid product-image"
+      (error)="onImageError($event)"
+      loading="lazy"
+    />
+
+    @if (product.isNew) {
+      <span class="badge bg-success position-absolute top-0 start-0 m-2">
+        Nuevo
+      </span>
+    }
+
+    <div
+      class="product-tooltip position-absolute bottom-0 start-0 end-0 p-3 bg-white text-dark small"
+    >
+      <h4 class="h6 fw-bold mb-1">Descripción:</h4>
+      <p class="mb-0">{{ product.description || 'Sin descripción' }}</p>
+    </div>
+  </div>
+
+  <div class="p-3 flex-grow-1 d-flex flex-column">
+    <h3
+      class="h6 fw-bold text-dark mb-2 text-truncate"
+      [title]="product.name || ''"
+    >
+      {{ product.name || 'Producto sin nombre' }}
+    </h3>
+
+    <div class="mt-auto pt-2">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fw-bolder text-success fs-5">{{ formattedPrice() }}</span>
+
+        @if (product.rating) {
+          <span class="text-warning small fw-bold">
+            <i class="bi bi-star-fill"></i> {{ product.rating }}
+          </span>
+        }
+      </div>
+
+      <button
+        (click)="onAddToCart()"
+        class="btn w-100 fw-bold transition-all"
+        [ngClass]="{
+          'btn-secondary': product.stock <= 0,
+          'btn-success': isAdded && product.stock > 0,
+          'btn-outline-success': !isAdded && product.stock > 0
+        }"
+        [disabled]="isAdded || product.stock <= 0"
+      >
+        @if (product.stock <= 0) {
+          <span><i class="bi bi-slash-circle me-1"></i>Agotado</span>
+        } @else if (isAdded) {
+          <span><i class="bi bi-check-lg me-1"></i>¡Añadido!</span>
+        } @else {
+          <span>Añadir al carrito</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

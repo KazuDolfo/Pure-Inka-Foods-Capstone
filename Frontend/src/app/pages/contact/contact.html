@@ -1,0 +1,44 @@
+<div class="container my-5 py-5">
+    
+    <app-page-header 
+        title="Información de la Oficina" 
+        subtitle="Estamos aquí para atenderte. Puedes visitarnos o contactarnos por los siguientes medios.">
+    </app-page-header>
+
+    <div class="row justify-content-center">
+        
+        <!-- Información de Contacto (Centrada) -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4 p-4">
+                <app-info-card
+                    iconClass="bi-geo-alt"
+                    title="Dirección Central"
+                    content="6131 Monkland Ave Montreal, QC, Canada, Quebec H4A 1H5">
+                </app-info-card>
+                
+                <hr class="my-4 opacity-10">
+
+                <app-info-card
+                    iconClass="bi-envelope"
+                    title="Correo Electrónico"
+                    content="pureinkafoods@gmail.com">
+                </app-info-card>
+                
+                <hr class="my-4 opacity-10">
+
+                <app-info-card
+                    iconClass="bi-telephone"
+                    title="Teléfono y WhatsApp"
+                    content="+51 969 390 772 (Lunes a Viernes, 9am - 5pm GMT-5)">
+                </app-info-card>
+            </div>
+
+            <div class="mt-5 text-center">
+                <p class="text-muted">¿Necesitas soporte técnico o ayuda con un pedido?</p>
+                <a routerLink="/user-profile" class="btn btn-outline-success">
+                    <i class="bi bi-chat-dots me-2"></i> Chatear con Soporte en mi Perfil
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

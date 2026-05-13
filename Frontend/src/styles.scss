@@ -1,0 +1,38 @@
+/*
+ * Archivo de Estilos Globales SCSS
+ * ---------------------------------
+ * Aquí se importan las variables, mixins y estilos base que se usarán en toda la aplicación.
+ * Los estilos de Bootstrap se cargan a través de angular.json y pueden ser sobreescritos aquí.
+ */
+
+// 1. Importaciones de la Arquitectura de Estilos
+// ---------------------------------------------
+@use 'styles/variables' as v;
+@use 'styles/typography' as t;
+@use 'styles/buttons' as b;
+@use 'styles/components' as c;
+
+// 3. Definición de Variables CSS Globales
+// -----------------------------------------
+:root {
+  --inkapt-dark-green: #{v.$inkapt-dark-green};
+  --inkapt-orange-accent: #{v.$inkapt-orange-accent};
+  --inkapt-dark-text: #{v.$inkapt-dark-text};
+  --inkapt-gray-border: #{v.$inkapt-gray-border};
+  --inkapt-light-green-bg: #{v.$inkapt-light-green-bg};
+  --inkapt-orange-hover: #{v.$inkapt-orange-hover};
+}
+
+
+// 2. Estilos Globales Adicionales
+// --------------------------------
+body {
+    font-family: 'Inter', sans-serif; // Una fuente moderna, asegúrate de importarla si no la tienes.
+    color: v.$dark; // Un gris oscuro más suave que el negro puro.
+}
+
+// Ajuste para que los fondos de sección no ocupen todo el ancho
+.bg-light-green {
+    background-color: v.$inkapt-light-green-bg;
+}
+

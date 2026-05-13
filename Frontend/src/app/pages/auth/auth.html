@@ -1,0 +1,183 @@
+<div class="auth-wrapper">
+  <div class="auth-container" [class.register-mode]="currentView() === 'register'">
+    
+    <!-- Panel Izquierdo: Login -->
+    <div class="panel login-panel">
+      <div class="content">
+        <header class="text-center mb-4">
+          <h1 class="h3 fw-bold text-inkapt-dark">Bienvenido de Vuelta</h1>
+          <p class="text-muted">Inicia sesión para continuar con Pure Inka Foods</p>
+        </header>
+
+        <div *ngIf="authMessage && currentView() === 'login'" class="alert text-center fw-bold mb-4"
+             [class.alert-success]="messageType === 'success'"
+             [class.alert-danger]="messageType === 'error'">
+          {{ authMessage }}
+        </div>
+
+        <form (ngSubmit)="signIn()" #loginForm="ngForm">
+          <div class="mb-3">
+            <label for="loginEmail" class="form-label">Correo Electrónico</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input type="email" id="loginEmail" name="loginEmail" class="form-control"
+                     [(ngModel)]="loginData.email" required placeholder="tu@email.com">
+            </div>
+          </div>
+          
+          <div class="mb-4">
+            <label for="loginPassword" class="form-label">Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input type="password" id="loginPassword" name="loginPassword" class="form-control"
+                     [(ngModel)]="loginData.password" required placeholder="••••••••">
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm" [disabled]="!loginForm.valid || isSubmitting">
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isSubmitting ? 'Verificando...' : 'Acceder' }}
+            </button>
+            <button type="button" class="btn btn-link text-decoration-none small text-muted mt-2" 
+                    (click)="openAdminModal()">
+              ¿Eres administrador?
+            </button>
+          </div>
+        </form>
+
+        <div class="mobile-toggle text-center mt-4">
+          <p class="mb-0">¿No tienes una cuenta?</p>
+          <button class="btn btn-link fw-bold text-success text-decoration-none" (click)="switchView('register')">Regístrate aquí</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Derecho: Registro -->
+    <div class="panel register-panel">
+      <div class="content">
+        <header class="text-center mb-4">
+          <h1 class="h3 fw-bold text-inkapt-dark">Crea tu Cuenta</h1>
+          <p class="text-muted">Únete a nuestra comunidad de bienestar natural</p>
+        </header>
+
+        <div *ngIf="authMessage && currentView() === 'register'" class="alert text-center fw-bold mb-4"
+             [class.alert-success]="messageType === 'success'"
+             [class.alert-danger]="messageType === 'error'">
+          {{ authMessage }}
+        </div>
+
+        <form (ngSubmit)="signUp()" #registerForm="ngForm">
+          <div class="mb-3">
+            <label for="registerName" class="form-label">Nombre Completo</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input type="text" id="registerName" name="registerName" class="form-control"
+                     [(ngModel)]="registerData.name" required placeholder="Juan Pérez">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="registerEmail" class="form-label">Correo Electrónico</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input type="email" id="registerEmail" name="registerEmail" class="form-control"
+                     [(ngModel)]="registerData.email" required placeholder="tu@email.com">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="registerPassword" class="form-label">Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input type="password" id="registerPassword" name="registerPassword" class="form-control"
+                     [(ngModel)]="registerData.password" required minlength="6" placeholder="••••••••">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+              <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
+                     [(ngModel)]="registerData.confirmPassword" required placeholder="••••••••">
+            </div>
+          </div>
+          
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm" [disabled]="!registerForm.valid || isSubmitting">
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+              {{ isSubmitting ? 'Registrando...' : 'Crear Cuenta' }}
+            </button>
+          </div>
+        </form>
+
+        <div class="mobile-toggle text-center mt-4">
+          <p class="mb-0">¿Ya tienes cuenta?</p>
+          <button class="btn btn-link fw-bold text-success text-decoration-none" (click)="switchView('login')">Inicia sesión aquí</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay Deslizante (Desktop) -->
+    <div class="overlay-container d-none d-lg-block">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h2 class="fw-bold text-white mb-3">¿Ya eres parte de Pure Inka?</h2>
+          <p class="text-white-50 mb-4">Descubre tus superalimentos favoritos y gestiona tus pedidos fácilmente.</p>
+          <button class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold" (click)="switchView('login')">INICIAR SESIÓN</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h2 class="fw-bold text-white mb-3">¡Hola! ¿Eres nuevo?</h2>
+          <p class="text-white-50 mb-4">Regístrate y comienza tu camino hacia una vida más saludable con nosotros.</p>
+          <button class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold" (click)="switchView('register')">REGISTRARSE</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal Administrativo (Mismo comportamiento) -->
+<div class="modal fade" 
+     id="adminModal" 
+     tabindex="-1" 
+     aria-hidden="true"
+     [class.show]="showAdminModal()"
+     style="display: {{ showAdminModal() ? 'block' : 'none' }};"
+     (click)="closeAdminModal()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-shield-lock me-2"></i>Acceso Admin</h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeAdminModal()"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div *ngIf="adminAuthMessage" class="alert text-center fw-bold mb-4"
+                     [class.alert-success]="adminMessageType === 'success'"
+                     [class.alert-danger]="adminMessageType === 'error'">
+                    {{ adminAuthMessage }}
+                </div>
+                
+                <form (ngSubmit)="signInAdmin()" #adminLoginForm="ngForm">
+                    <div class="mb-3">
+                        <label class="form-label">Correo Administrativo</label>
+                        <input type="email" name="adminEmail" class="form-control"
+                               [(ngModel)]="adminLoginData.email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" name="adminPassword" class="form-control"
+                               [(ngModel)]="adminLoginData.password" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100 btn-lg fw-bold" 
+                            [disabled]="!adminLoginForm.valid || isSubmittingAdmin">
+                        {{ isSubmittingAdmin ? 'Verificando...' : 'Acceder' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop fade" [class.show]="showAdminModal()" *ngIf="showAdminModal()"></div>

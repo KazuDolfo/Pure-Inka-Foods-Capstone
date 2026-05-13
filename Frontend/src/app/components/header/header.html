@@ -1,0 +1,52 @@
+<nav class="main-header" [class.menu-open]="isMobileMenuOpen()">
+  <div class="container-fluid px-4">
+    <div class="header-inner">
+      
+      <!-- Logo Section -->
+      <div class="header-logo">
+        <a [routerLink]="[homeLink]" (click)="closeMobileMenu()">
+          <img src="assets/pure-inka-logo.png" alt="Pure Inka Foods" class="logo-img">
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <ul class="nav-links d-none d-lg-flex">
+        <li><a [routerLink]="[homeLink]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a></li>
+        <li><a [routerLink]="['/shop']" routerLinkActive="active">Tienda</a></li>
+        <li><a [routerLink]="['/about']" routerLinkActive="active">Nosotros</a></li>
+        <li><a [routerLink]="['/contact']" routerLinkActive="active">Contacto</a></li>
+      </ul>
+
+      <!-- Actions / Mobile Toggle -->
+      <div class="header-actions">
+        <button class="mobile-toggle d-lg-none" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen()">
+          <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="mobile-menu-overlay d-lg-none" [class.show]="isMobileMenuOpen()" (click)="closeMobileMenu()">
+    <div class="mobile-menu-content" (click)="$event.stopPropagation()">
+      <div class="mobile-menu-header">
+        <img src="assets/pure-inka-logo.png" alt="Logo" class="mobile-logo">
+        <button class="btn-close-menu" (click)="closeMobileMenu()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <ul class="mobile-nav-links">
+        <li><a [routerLink]="[homeLink]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Inicio</a></li>
+        <li><a [routerLink]="['/shop']" routerLinkActive="active" (click)="closeMobileMenu()">Tienda</a></li>
+        <li><a [routerLink]="['/about']" routerLinkActive="active" (click)="closeMobileMenu()">Nosotros</a></li>
+        <li><a [routerLink]="['/contact']" routerLinkActive="active" (click)="closeMobileMenu()">Contacto</a></li>
+      </ul>
+      <div class="mobile-menu-footer">
+        <p class="small text-muted">Superalimentos Puros</p>
+      </div>
+    </div>
+  </div>
+</nav>

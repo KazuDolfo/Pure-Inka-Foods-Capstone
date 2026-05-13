@@ -1,0 +1,55 @@
+@use 'variables' as v;
+
+// Tarjeta de información (usada en la página de contacto)
+.info-card {
+    background-color: v.$light-gray-bg;
+    border: 1px solid v.$inkapt-gray-border;
+    border-radius: v.$border-radius-default;
+    border-left: 4px solid v.$success;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .info-card-icon {
+        color: v.$success;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+// Tarjeta de formulario
+.form-card {
+    border: 1px solid v.$inkapt-gray-border;
+    border-radius: v.$border-radius-large;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+// Estilos para inputs de búsqueda y formularios
+.form-control {
+    &:focus {
+        border-color: v.$success;
+        box-shadow: 0 0 0 0.25rem rgba(v.$success, 0.25);
+    }
+}
+
+// Banner principal de la página de inicio
+.home-banner {
+    background-image: url('/assets/banner-palmeras.jpg');
+    background-size: cover;
+    background-position: center center;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); // Superposición oscura semitransparente
+    z-index: 0;
+}
