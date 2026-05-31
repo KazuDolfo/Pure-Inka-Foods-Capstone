@@ -1,40 +1,61 @@
-Guía de Ejecución: PUREINKA E-Commerce
+# Guía de Instalación del Proyecto
 
-Este documento explica cómo poner en marcha el proyecto PUREINKA en su computadora de forma sencilla.
+Sigue estos pasos para configurar y ejecutar la plataforma Pure Inka Foods en tu entorno local.
 
-Requisitos Previos
+## 1. Requisitos del Sistema
 
-Para que el sistema funcione, debe tener instalado Node.js (versión 18 o superior) y MySQL.
+Asegúrate de contar con las siguientes herramientas instaladas:
+- Node.js (v18+) y npm.
+- MySQL Server (v8.0+).
+- Git.
+- Angular CLI (opcional, instalado vía `npm install -g @angular/cli`).
 
-Paso 1: Base de Datos
+## 2. Preparación de la Base de Datos
 
-Primero, debe preparar la base de datos en su servidor MySQL. Utilice los archivos proporcionados en la raíz del proyecto en el siguiente orden:
-1. Ejecute DDL-bd_pureinka.sql para crear la estructura.
-2. Ejecute DML-Pure inka.sql para cargar los datos iniciales.
+1. Inicia tu servidor MySQL.
+2. Abre tu herramienta de gestión (ej. MySQL Workbench o terminal).
+3. Ejecuta el archivo `DDL-bd_pureinka.sql` para crear la estructura de tablas.
+4. (Opcional) Ejecuta `DML-Pure inka.sql` si deseas cargar datos de prueba iniciales (productos, categorías y usuarios).
 
-Paso 2: Servidor (Backend)
+## 3. Configuración del Backend
 
-Diríjase a la carpeta Backend desde su terminal. Una vez allí, instale los componentes necesarios con el comando:
-npm install
+1. Abre una terminal en la carpeta `Backend`.
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Crea un archivo `.env` basado en el siguiente ejemplo:
+   ```env
+   PORT=5000
+   DB_HOST=localhost
+   DB_USER=tu_usuario
+   DB_PASS=tu_contrasena
+   DB_NAME=BD_pureinka
+   JWT_SECRET=tu_secreto_seguro
+   BCRYPT_SALT_ROUNDS=12
+   STRIPE_SECRET_KEY=tu_llave_de_stripe
+   ```
+4. Inicia el servidor:
+   ```bash
+   npm start
+   ```
 
-Luego, asegúrese de que el archivo .env tenga sus credenciales de MySQL correctas. Para iniciar el servidor, use:
-npm run dev
+## 4. Configuración del Frontend
 
-El servidor se activará en el puerto 5000.
+1. Abre una terminal en la carpeta `Frontend`.
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Verifica la configuración en `src/environments/environment.ts` para asegurar que apunta a la URL correcta del backend.
+4. Inicia la aplicación:
+   ```bash
+   npm start
+   ```
+5. Accede a `http://localhost:4200` en tu navegador.
 
-Paso 3: Interfaz (Frontend)
+## 5. Cuentas de Prueba
 
-Abra una nueva terminal y entre en la carpeta Frontend. Instale los componentes requeridos:
-npm install
-
-Finalmente, inicie la aplicación con el comando:
-npm start
-
-Podrá ver la tienda funcionando en su navegador entrando a http://localhost:4200.
-
-Accesos de Prueba
-
-Para probar el sistema, puede usar las siguientes cuentas:
-
-Administrador: admin@pureinka.com / contraseña: admin123
-Cliente: berna@gmail.com / contraseña: sasasa
+Si utilizaste el archivo DML, puedes usar estas credenciales:
+- **Cliente**: berna@gmail.com / 123456
+- **Administrador**: admin@pureinka.com / 123456

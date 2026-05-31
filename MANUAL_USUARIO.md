@@ -1,25 +1,45 @@
-Manual de Usuario: PUREINKA E-Commerce
+# Manual de Usuario - Pure Inka Foods
 
-Bienvenido a Pure Inka Foods, su plataforma para la compra de superalimentos naturales de origen peruano. Este manual le ayudará a entender cómo navegar y utilizar las herramientas del sistema.
+Bienvenido al manual de uso de nuestra plataforma. Aquí encontrarás la información necesaria para navegar y utilizar todas las funciones del sistema.
 
-Tipos de Usuario
+## 1. Experiencia de Compra
 
-El sistema diferencia entre dos tipos de personas: los Clientes, que realizan compras, y los Administradores, que gestionan la tienda.
+### Explorar el Catálogo
+Desde la página principal o la sección de "Tienda", puedes ver todos nuestros productos. Utiliza la barra lateral para filtrar por categorías (como Superalimentos en Polvo o Aceites Naturales) o busca un producto específico por su nombre o SKU.
 
-Experiencia del Cliente
+### Proceso de Pedido
+1. Añade los productos deseados al carrito.
+2. Haz clic en el icono del carrito en la parte superior para revisar tu selección.
+3. Ve al "Checkout" para completar tu compra.
+4. Selecciona o agrega una dirección de envío.
+5. Elige tu método de pago (Yape, Plin, Transferencia o Tarjeta).
+6. Selecciona si deseas Boleta o Factura. Si es factura, deberás ingresar el RUC y Razón Social.
+7. Si pagas por Yape, Plin o Transferencia, sube la captura de pantalla de tu comprobante de pago para validación.
 
-Como cliente, usted puede explorar el catálogo de productos desde la sección Tienda. Si encuentra algo de su interés, puede añadirlo al carrito de compras. 
+## 2. Gestión de Cuenta
 
-Para finalizar un pedido, el sistema le solicitará iniciar sesión o registrarse. Una vez identificado, podrá ingresar su dirección de envío y proceder al pago seguro. En su perfil personal, podrá consultar el historial de todas sus compras y actualizar sus datos de contacto.
+### Perfil Personal
+En la sección "Mi Perfil" podrás:
+- Editar tu nombre, correo y teléfono.
+- Gestionar tus direcciones de entrega.
+- Revisar el historial de tus pedidos.
+- Acceder al chat de soporte para consultas directas.
+- Descargar el comprobante (PDF) de tus pedidos ya pagados.
 
-Experiencia del Administrador
+### Recuperación de Acceso
+Si olvidaste tu contraseña, ve a la página de Acceso y selecciona "¿Olvidaste tu contraseña?". Podrás restablecerla ingresando el código de seguridad de 6 dígitos que recibirás en tu correo o teléfono registrado.
 
-Si usted tiene una cuenta de administrador, tendrá acceso a un panel especial para la gestión del negocio.
+## 3. Administración del Sistema (Solo para Personal Autorizado)
 
-Desde el panel de control o Dashboard, podrá observar el rendimiento de la tienda, como las ventas totales y los pedidos recientes. En la sección de Productos, podrá dar de alta nuevos artículos, subir fotografías, ajustar precios o modificar el stock disponible. 
+### Dashboard
+El panel administrativo ofrece una visión general del negocio con gráficas de ventas, nuevos usuarios registrados, productos más vendidos y alertas de stock bajo.
 
-También podrá supervisar los pedidos realizados por los clientes y leer los mensajes enviados a través del formulario de contacto para brindar una atención personalizada.
+### Gestión de Pedidos
+Como administrador, puedes:
+- Revisar la lista de pedidos pendientes.
+- Validar las imágenes de comprobantes de pago subidas por los clientes.
+- Cambiar el estado de un pedido (ej. de Pendiente a Pagado, o de Procesando a Enviado).
+- Descargar copias de los comprobantes PDF emitidos.
 
-Soporte y Recomendaciones
-
-Para un funcionamiento óptimo, asegúrese de que tanto el servidor como la base de datos estén activos antes de intentar realizar compras. Si experimenta algún inconveniente con los pagos, verifique su conexión a internet, ya que el sistema se comunica externamente para procesar las transacciones de forma segura.
+### Soporte al Cliente
+Utiliza el centro de mensajes para responder en tiempo real a las dudas de los clientes que inicien una conversación desde su perfil.
