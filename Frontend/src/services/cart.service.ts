@@ -22,6 +22,10 @@ export class CartService {
     this.cart().reduce((sum, item) => sum + item.price * item.quantity, 0)
   );
 
+  cartIgv = computed(() => this.cartTotal() * 0.18);
+  
+  cartTotalWithIgv = computed(() => this.cartTotal() + this.cartIgv());
+
   getAggregatedItems = computed(() => {
     const items = this.cart();
     const map = new Map<number, CartItem>();
@@ -67,7 +71,7 @@ export class CartService {
           if (res.success && Array.isArray(res.data)) {
             const items: CartItem[] = res.data.map((item: any) => ({
               id: item.id_producto,
-              name: item.nombre_producto || 'Producto',
+              name: item.nombre || 'Producto',
               price: parseFloat(item.precio_fijo || item.precio || 0),
               quantity: item.cantidad,
               image: item.imagen_url || 'assets/pure-inka-logo.png'

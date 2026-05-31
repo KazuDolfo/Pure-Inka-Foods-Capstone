@@ -1,50 +1,115 @@
-<!-- src/app/pages/home/home.html -->
-<section class="home-banner position-relative text-center py-5">
+<!-- HERO SECTION -->
+<section class="hero-premium position-relative d-flex align-items-center">
   <div class="banner-overlay"></div>
-  <div class="container py-5 position-relative z-1">
-    <h1 class="display-5 fw-bolder text-white mb-3">
-      Cosechado con Integridad, Procesado con Pureza.
-    </h1>
-    <p class="lead text-white-50">Descubre superalimentos andinos y amazónicos, puros y potentes.</p>
+  <div class="container position-relative z-2 text-white">
+    <div class="row">
+      <div class="col-lg-7 animate__animated animate__fadeInLeft">
+        <span class="badge bg-inkapt-accent text-inkapt-primary mb-3 px-3 py-2 rounded-pill fw-bold">100% ORGÁNICO & NATURAL</span>
+        <h1 class="display-3 fw-800 mb-4 lh-1">
+          El poder de los <span class="text-inkapt-accent">Andes</span> en tu mesa.
+        </h1>
+        <p class="lead mb-5 opacity-75">
+          Descubre superalimentos cosechados con integridad y procesados con pureza directamente desde las alturas peruanas.
+        </p>
+        <div class="d-flex gap-3">
+          <a [routerLink]="['/shop']" class="btn btn-premium btn-success btn-lg shadow-lg">EXPLORAR TIENDA</a>
+          <a [routerLink]="['/about']" class="btn btn-premium btn-outline-light btn-lg">CONÓCENOS</a>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="container my-5 py-4">
-  <h2 class="page-title text-center mb-5">Nuestros Productos</h2>
-
-  @if (loading) {
-    <div class="text-center">
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Cargando...</span>
+<!-- FEATURES SECTION -->
+<section class="section-padding bg-white">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="info-card h-100 text-center">
+          <i class="bi bi-shield-check info-card-icon"></i>
+          <h4 class="fw-bold">Calidad Certificada</h4>
+          <p class="text-muted small mb-0">Procesos rigurosos que garantizan la pureza máxima de cada ingrediente.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card h-100 text-center">
+          <i class="bi bi-truck info-card-icon"></i>
+          <h4 class="fw-bold">Envíos Rápidos</h4>
+          <p class="text-muted small mb-0">Llevamos el bienestar a tu puerta en tiempo récord a todo el país.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="info-card h-100 text-center">
+          <i class="bi bi-heart-fill info-card-icon"></i>
+          <h4 class="fw-bold">Sostenibilidad</h4>
+          <p class="text-muted small mb-0">Apoyamos a comunidades locales con prácticas de comercio justo.</p>
+        </div>
       </div>
     </div>
-  }
-
-  @if (error) {
-    <div class="alert alert-warning text-center" role="alert">
-      {{ error }}
-    </div>
-  }
-
-  @if (!loading && !error && featuredProducts.length > 0) {
-    <div class="row g-4 justify-content-center">
-      @for (product of featuredProducts; track product.id) {
-        <div class="col-lg-3 col-md-4 col-sm-6">
-          <app-product-card [product]="product"></app-product-card>
-        </div>
-      }
-    </div>
-  }
-
-  @if (!loading && !error && featuredProducts.length === 0) {
-    <div class="text-center py-3">
-      <p>No hay productos disponibles.</p>
-    </div>
-  }
-
-  <div class="text-center mt-5">
-    <a [routerLink]="['/shop']" class="btn btn-outline-success fw-bold text-uppercase px-5 py-2">
-      Ver más
-    </a>
   </div>
-  </section>
+</section>
+
+<!-- PRODUCTS PREVIEW -->
+<section class="section-padding">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-5">
+      <div>
+        <span class="text-inkapt-accent fw-bold text-uppercase letter-spacing-1">Nuestra Selección</span>
+        <h2 class="display-5 fw-bold text-inkapt-dark">Productos Destacados</h2>
+      </div>
+      <a [routerLink]="['/shop']" class="btn btn-link text-inkapt-primary fw-bold text-decoration-none d-none d-md-block">
+        VER TODA LA TIENDA <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    @if (loading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+      </div>
+    }
+
+    @if (error) {
+      <div class="alert alert-warning text-center rounded-4 shadow-sm">
+        {{ error }}
+      </div>
+    }
+
+    @if (!loading && !error && featuredProducts.length > 0) {
+      <div class="row g-4">
+        @for (product of featuredProducts; track product.id) {
+          <div class="col-lg-3 col-md-4 col-sm-6">
+            <app-product-card [product]="product"></app-product-card>
+          </div>
+        }
+      </div>
+    }
+
+    @if (!loading && !error && featuredProducts.length === 0) {
+      <div class="text-center py-5 bg-light rounded-5">
+        <p class="mb-0">No hay productos destacados en este momento.</p>
+      </div>
+    }
+
+    <div class="text-center mt-5 d-md-none">
+      <a [routerLink]="['/shop']" class="btn btn-premium btn-success w-100">VER TODO</a>
+    </div>
+  </div>
+</section>
+
+<!-- CALL TO ACTION -->
+<section class="section-padding">
+  <div class="container">
+    <div class="card-premium bg-inkapt-primary p-5 text-center text-white overflow-hidden position-relative">
+      <div class="position-relative z-2 py-4">
+        <h2 class="display-4 fw-bold mb-3">Únete a la Revolución Natural</h2>
+        <p class="lead mb-4 opacity-75 mx-auto" style="max-width: 600px;">
+          Recibe ofertas exclusivas, consejos de nutrición y las últimas novedades de Pure Inka Foods.
+        </p>
+        <div class="d-flex justify-content-center">
+            <a [routerLink]="['/auth']" class="btn btn-premium btn-light btn-lg text-inkapt-primary px-5">REGISTRARSE AHORA</a>
+        </div>
+      </div>
+      <i class="bi bi-leaf position-absolute opacity-10" style="font-size: 20rem; right: -50px; bottom: -100px;"></i>
+    </div>
+  </div>
+</section>

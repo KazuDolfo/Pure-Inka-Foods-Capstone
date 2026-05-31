@@ -1,19 +1,31 @@
-// Paleta de Colores Corporativos
-$inkapt-dark-green: #489C0F;
-$inkapt-orange-accent: #E88717;
-$inkapt-orange-hover: #d1750e;
-$inkapt-dark-text: #34495e;
-$inkapt-light-green-bg: #e9f5e9;
+// Paleta de Colores Premium & Natural
+$inkapt-primary: #1a5c20;      // Verde Bosque Profundo
+$inkapt-accent: #d4af37;       // Dorado Suave (Acento)
+$inkapt-accent-hover: #b8922e;
+$inkapt-dark-text: #2c3e50;    // Azul Grisáceo Oscuro
+$inkapt-body-bg: #fcfaf7;      // Crema Cálido muy suave
+$inkapt-card-bg: #ffffff;      // Blanco puro para las tarjetas
+$inkapt-success: #28a745;
+$inkapt-danger: #dc3545;
 
-// Grises
-$inkapt-gray-border: #e0e0e0;
-$light-gray-bg: #fcfcfc;
+// Grises y Bordes
+$inkapt-gray-light: #f1f3f5;
+$inkapt-gray-border: #e9ecef;
+$inkapt-gray-text: #6c757d;
 
-// Paleta Semántica (reemplazando variables de Bootstrap si es necesario)
-$primary: $inkapt-orange-accent;
-$success: $inkapt-dark-green;
-$dark: $inkapt-dark-text;
+// Tipografía
+$font-family-headers: 'Montserrat', sans-serif;
+$font-family-body: 'Inter', sans-serif;
 
 // Tamaños y Bordes
-$border-radius-default: 8px;
-$border-radius-large: 12px;
+$border-radius-default: 12px;
+$border-radius-premium: 20px;
+$box-shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.05);
+$box-shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.08);
+
+// Semántica Bootstrap
+$primary: $inkapt-primary;
+$success: $inkapt-success;
+$dark: $inkapt-dark-text;
+$body-bg: $inkapt-body-bg;
+$body-color: $inkapt-dark-text;

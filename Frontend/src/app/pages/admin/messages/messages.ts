@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from '../../../../services/message.service';
 import { AuthService } from '../../../../services/auth/auth.service';
-import { AdminService } from '../../../../services/admin.service';
 import { SocketService } from '../../../../services/socket.service';
 import { Subscription } from 'rxjs';
 import { Mensaje, Conversacion } from '../../../../models';
@@ -13,33 +12,25 @@ import { Mensaje, Conversacion } from '../../../../models';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './messages.html',
-  styleUrls: ['./messages.css']
+  styleUrl: './messages.scss'
 })
 export class MessagesComponent implements OnInit, OnDestroy {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
   @ViewChild('fileInput') private fileInput!: ElementRef;
 
   private messageService = inject(MessageService);
-  private adminService = inject(AdminService);
   private socketService = inject(SocketService);
   public authService = inject(AuthService);
 
-  // Signals de Estado
   conversations = signal<Conversacion[]>([]);
   selectedConv = signal<Conversacion | null>(null);
   messages = signal<Mensaje[]>([]);
   
-  // UI Signals
   newMessage = signal('');
   isSending = signal(false);
   isLoadingChat = signal(false);
   isSidebarLoading = signal(false);
-  isClientInfoLoading = signal(false);
   selectedFile: File | null = null;
-
-  // Detalles del Cliente
-  clientProfile = signal<any | null>(null);
-  clientOrders = signal<any[]>([]);
 
   private socketSub?: Subscription;
 
@@ -47,7 +38,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
     effect(() => {
       const conv = this.selectedConv();
       if (conv) {
-        this.loadClientData(conv.id_cliente);
         this.socketService.joinRoom(conv.id_conversacion);
       }
     });
@@ -102,15 +92,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadClientData(clientId: number) {
-    this.isClientInfoLoading.set(true);
-    this.adminService.getUserProfile(clientId).subscribe(p => this.clientProfile.set(p));
-    this.adminService.getUserOrders(clientId).subscribe(o => {
-      this.clientOrders.set(o);
-      this.isClientInfoLoading.set(false);
-    });
-  }
-
   sendMessage() {
     const text = this.newMessage().trim();
     if (!text && !this.selectedFile) return;
@@ -120,7 +101,6 @@ export class MessagesComponent implements OnInit, OnDestroy {
 
     this.isSending.set(true);
     
-    // El admin envía usando id_conversacion obligatorio (Punto 1.4)
     this.messageService.sendMessage({
       contenido: text,
       id_conversacion: conv.id_conversacion,
@@ -130,16 +110,12 @@ export class MessagesComponent implements OnInit, OnDestroy {
         this.isSending.set(false);
         this.newMessage.set('');
         this.selectedFile = null;
-        if (res.success && res.data) {
-           // this.messages.update(m => [...m, res.data]);
-        }
         this.loadMessages(conv.id_conversacion);
       },
       error: () => this.isSending.set(false)
     });
   }
 
-  // Método auxiliar para recargar mensajes (usado tras enviar si no viene por socket)
   loadMessages(conversationId: number) {
     this.messageService.getAdminConversationById(conversationId).subscribe(res => {
       this.messages.set(res.messages);
@@ -182,6 +158,4 @@ export class MessagesComponent implements OnInit, OnDestroy {
       this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
     }
   }
-
-  getStatusBadgeClass = (s: string) => s === 'ENTREGADO' ? 'bg-success' : 'bg-warning';
 }

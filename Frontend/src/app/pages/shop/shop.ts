@@ -1,33 +1,26 @@
 // src/app/pages/shop/shop.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductCard } from '../../components/product-card/product-card';
 import { ProductService } from 'services/product.service';
 import { CartService } from 'services/cart.service';
-import { PageHeader } from '../../components/page-header/page-header';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-shop',
   standalone: true,
-  imports: [CommonModule, ProductCard, FormsModule, PageHeader],
+  imports: [CommonModule, ProductCard, FormsModule],
   templateUrl: './shop.html',
-  styleUrls: ['./shop.scss'],
+  styleUrl: './shop.scss',
 })
-export class Shop implements OnInit {
+export class Shop implements OnInit, OnDestroy {
   searchTerm: string = '';
-  selectedCategoryId: number | null = null;
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
+  selectedCategoryId: string = '';
 
-  getProducts = () => {
-    let prods = this.productService.getProducts();
-    if (this.searchTerm) {
-      prods = prods.filter(p => p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) || p.sku.toLowerCase().includes(this.searchTerm.toLowerCase()));
-    }
-    if (this.selectedCategoryId) {
-      prods = prods.filter(p => p.id_categoria === this.selectedCategoryId);
-    }
-    return prods;
-  };
+  getProducts = () => this.productService.getProducts();
 
   getCategories = () => this.productService.getCategories();
   getLoading = () => this.productService.isLoadingProducts();
@@ -43,20 +36,35 @@ export class Shop implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.productService.loadProducts();
     await this.productService.loadCategories();
+
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(async term => {
+      this.searchTerm = term;
+      await this.productService.loadProducts(this.searchTerm, this.selectedCategoryId);
+    });
   }
 
-  onSearchInput(): void {
-    // El filtrado es por computed/getter
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  onCategoryChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const value = target.value;
-    this.selectedCategoryId = value ? parseInt(value, 10) : null;
+  onSearchInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchSubject.next(target.value);
   }
 
-  clearFilters(): void {
+  async selectCategory(id: string): Promise<void> {
+    this.selectedCategoryId = id;
+    await this.productService.loadProducts(this.searchTerm, this.selectedCategoryId);
+  }
+
+  async clearFilters(): Promise<void> {
     this.searchTerm = '';
-    this.selectedCategoryId = null;
+    this.selectedCategoryId = '';
+    await this.productService.loadProducts();
   }
 }

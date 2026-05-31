@@ -1,43 +1,46 @@
-<div class="container my-5 py-5">
-    
-    <app-page-header 
-        title="Información de la Oficina" 
-        subtitle="Estamos aquí para atenderte. Puedes visitarnos o contactarnos por los siguientes medios.">
-    </app-page-header>
+<div class="container my-5 pt-5">
+    <div class="text-center mb-5 animate__animated animate__fadeIn">
+        <span class="text-inkapt-accent fw-bold text-uppercase letter-spacing-1">Contacto</span>
+        <h1 class="display-4 fw-800 text-inkapt-dark">Estamos para Ayudarte</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 600px;">
+            ¿Tienes dudas sobre nuestros productos o tu pedido? Ponte en contacto con nuestro equipo.
+        </p>
+    </div>
 
-    <div class="row justify-content-center">
-        
-        <!-- Información de Contacto (Centrada) -->
-        <div class="col-lg-6">
-            <div class="card shadow-sm border-0 rounded-4 p-4">
-                <app-info-card
-                    iconClass="bi-geo-alt"
-                    title="Dirección Central"
-                    content="6131 Monkland Ave Montreal, QC, Canada, Quebec H4A 1H5">
-                </app-info-card>
+    <div class="row justify-content-center g-4">
+        <div class="col-lg-5">
+            <div class="card-premium p-5 text-center h-100">
+                <i class="bi bi-geo-alt fs-1 text-inkapt-primary mb-3"></i>
+                <h4 class="fw-bold">Visítanos</h4>
+                <p class="text-muted">Av. Javier Prado Este 2550, San Isidro, Lima, Perú</p>
+                <hr class="my-4 opacity-5">
                 
-                <hr class="my-4 opacity-10">
+                <i class="bi bi-envelope fs-1 text-inkapt-primary mb-3"></i>
+                <h4 class="fw-bold">Escríbenos</h4>
+                <p class="text-muted mb-0">ventas@pureinka.com</p>
+                <p class="text-muted">soporte@pureinka.com</p>
+                <hr class="my-4 opacity-5">
 
-                <app-info-card
-                    iconClass="bi-envelope"
-                    title="Correo Electrónico"
-                    content="pureinkafoods@gmail.com">
-                </app-info-card>
-                
-                <hr class="my-4 opacity-10">
-
-                <app-info-card
-                    iconClass="bi-telephone"
-                    title="Teléfono y WhatsApp"
-                    content="+51 969 390 772 (Lunes a Viernes, 9am - 5pm GMT-5)">
-                </app-info-card>
+                <i class="bi bi-whatsapp fs-1 text-inkapt-primary mb-3"></i>
+                <h4 class="fw-bold">WhatsApp</h4>
+                <p class="text-muted mb-0">+51 969 390 772</p>
+                <p class="small text-muted">Lunes a Viernes, 9am - 6pm</p>
             </div>
+        </div>
 
-            <div class="mt-5 text-center">
-                <p class="text-muted">¿Necesitas soporte técnico o ayuda con un pedido?</p>
-                <a routerLink="/user-profile" class="btn btn-outline-success">
-                    <i class="bi bi-chat-dots me-2"></i> Chatear con Soporte en mi Perfil
+        <div class="col-lg-5">
+            <div class="card-premium p-5 bg-inkapt-primary text-white h-100 d-flex flex-column justify-content-center">
+                <h3 class="fw-bold mb-4">Soporte Directo</h3>
+                <p class="opacity-75 mb-5">
+                    Si eres cliente registrado, puedes iniciar una conversación en tiempo real con nuestros asesores de salud desde tu perfil.
+                </p>
+                <a [routerLink]="['/user-profile']" [queryParams]="{ tab: 'messages' }" class="btn btn-premium btn-light btn-lg text-inkapt-primary w-100">
+                    <i class="bi bi-chat-dots-fill me-2"></i> IR AL CHAT DE SOPORTE
                 </a>
+                
+                <div class="mt-auto pt-5 text-center">
+                    <p class="small opacity-50 mb-0 text-uppercase letter-spacing-1">Pure Inka Foods S.A.C.</p>
+                </div>
             </div>
         </div>
     </div>

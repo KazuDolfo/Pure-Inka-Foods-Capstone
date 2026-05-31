@@ -1,23 +1,48 @@
 @use 'variables' as v;
 
-// Clase de utilidad para el color de texto principal
 .text-inkapt-dark {
-    color: v.$dark !important;
+    color: v.$inkapt-dark-text !important;
 }
 
-// Estilo para los encabezados principales de las páginas
+.text-inkapt-accent {
+    color: v.$inkapt-accent !important;
+}
+
+.fw-800 { font-weight: 800; }
+.fw-900 { font-weight: 900; }
+
+.letter-spacing-1 { letter-spacing: 1px; }
+
 .page-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
 
     .page-title {
-        font-size: 2.8rem;
-        font-weight: 900; // Bolder
-        color: v.$dark;
+        font-size: 3.2rem;
+        font-weight: 800;
+        color: v.$inkapt-dark-text;
+        letter-spacing: -1px;
     }
 
     .page-subtitle {
-        font-size: 1.2rem;
-        color: #6c757d; // text-muted de Bootstrap
+        font-size: 1.1rem;
+        color: v.$inkapt-gray-text;
+        font-family: v.$font-family-body;
+    }
+}
+
+.section-title {
+    position: relative;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background-color: v.$inkapt-accent;
     }
 }

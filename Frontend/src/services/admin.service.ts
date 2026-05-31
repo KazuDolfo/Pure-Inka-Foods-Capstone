@@ -71,7 +71,7 @@ export class AdminService {
 
   // DASHBOARD
   getDashboardStats(range: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.API_BASE_URL}/admin/stats?range=${range}`, { headers: this.getAuthHeaders() }).pipe(
+    return this.http.get<any>(`${this.API_BASE_URL}/stats/dashboard?range=${range}`, { headers: this.getAuthHeaders() }).pipe(
       map(res => res.success ? res.data : null),
       catchError(() => throwError(() => new Error('Error al obtener estadísticas')))
     );

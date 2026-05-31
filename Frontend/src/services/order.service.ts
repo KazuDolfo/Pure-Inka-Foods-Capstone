@@ -14,16 +14,22 @@ export class OrderService {
   private auth = inject(AuthService);
   private API_URL = `${environment.apiUrl}/orders`;
 
-  private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      'Authorization': `Bearer ${this.auth.getToken() || ''}`,
-      'Content-Type': 'application/json'
+  private getHeaders(isFormData: boolean = false): HttpHeaders {
+    let headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.auth.getToken() || ''}`
     });
+    
+    if (!isFormData) {
+      headers = headers.set('Content-Type', 'application/json');
+    }
+    
+    return headers;
   }
 
   // POST / (Crea pedido y descuenta stock)
   createOrder(orderData: any): Observable<any> {
-    return this.http.post<any>(this.API_URL, orderData, { headers: this.getHeaders() }).pipe(
+    const isFormData = orderData instanceof FormData;
+    return this.http.post<any>(this.API_URL, orderData, { headers: this.getHeaders(isFormData) }).pipe(
       catchError(err => throwError(() => new Error(err.error?.message || 'Error al crear pedido')))
     );
   }
@@ -50,5 +56,23 @@ export class OrderService {
       map(res => res.success ? res.data : null),
       catchError(() => throwError(() => new Error('Error al obtener detalles del pedido')))
     );
+  }
+
+  // PUT /:id/status (Admin)
+  updateOrderStatus(id: number, statusData: { estado_pago?: string, estado_envio?: string }): Observable<any> {
+    return this.http.put<any>(`${this.API_URL}/${id}/status`, statusData, { headers: this.getHeaders() }).pipe(
+      catchError(err => throwError(() => new Error(err.error?.message || 'Error al actualizar pedido')))
+    );
+  }
+
+  // Descargar PDF de Comprobante
+  downloadPDF(id: number): Observable<Blob> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.auth.getToken() || ''}`
+    });
+    return this.http.get(`${this.API_URL}/${id}/pdf`, { 
+      headers, 
+      responseType: 'blob' 
+    });
   }
 }

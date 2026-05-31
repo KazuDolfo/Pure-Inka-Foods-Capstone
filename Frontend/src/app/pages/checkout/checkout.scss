@@ -1,0 +1,61 @@
+@use '../../../styles/variables' as v;
+
+.checkout-steps {
+    .nav-link {
+        border-bottom: 3px solid v.$inkapt-gray-border;
+        color: v.$inkapt-gray-text;
+        border-radius: 0;
+        padding: 15px 10px;
+        transition: all 0.3s ease;
+
+        &.active {
+            color: v.$inkapt-primary;
+            border-bottom-color: v.$inkapt-primary;
+            background: transparent;
+        }
+    }
+}
+
+.checkout-form-card {
+    border-radius: v.$border-radius-premium;
+    border: none;
+    box-shadow: v.$box-shadow-premium;
+}
+
+.payment-card {
+    cursor: pointer;
+    border: 2px solid v.$inkapt-gray-border;
+    border-radius: 15px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+
+    &:hover {
+        border-color: v.$inkapt-primary;
+        background: v.$inkapt-gray-light;
+    }
+
+    &.active {
+        border-color: v.$inkapt-primary;
+        background: rgba(26, 92, 32, 0.05);
+        color: v.$inkapt-primary;
+        font-weight: 700;
+    }
+
+    .payment-logo {
+        height: 30px;
+        margin-bottom: 8px;
+    }
+}
+
+.sticky-top {
+    top: 100px;
+}
+
+.qr-img {
+    max-width: 200px;
+}
+
+.extra-small {
+    font-size: 0.75rem;
+}

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -9,4 +10,12 @@ import { RouterModule } from '@angular/router';
   templateUrl: './admin.html',
   styleUrl: './admin.css'
 })
-export class AdminPage {}
+export class AdminPage {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/auth']);
+  }
+}

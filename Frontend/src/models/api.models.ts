@@ -45,8 +45,10 @@ export interface Product {
   description: string;
   image: string;
   stock: number;
+  stock_actual: number;
   isActive: boolean;
   id_categoria?: number;
+  category_name?: string;
   isNew?: boolean;
   rating?: number;
 }

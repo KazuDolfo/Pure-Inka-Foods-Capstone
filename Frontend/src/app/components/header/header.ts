@@ -9,7 +9,7 @@ import { AuthService } from '../../../services/auth/auth.service'; // Asegúrate
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './header.html',
-  styleUrl: './header.css',
+  styleUrl: './header.scss',
 })
 export class Header {
   isMobileMenuOpen = signal(false);

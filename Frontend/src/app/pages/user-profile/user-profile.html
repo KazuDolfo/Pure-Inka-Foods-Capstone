@@ -15,15 +15,19 @@
           <button (click)="setActiveTab('profile')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'profile'">
             <i class="bi bi-person me-2"></i> Mi Perfil
           </button>
-          <button (click)="setActiveTab('orders')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'orders'">
-            <i class="bi bi-box-seam me-2"></i> Mis Pedidos
-          </button>
-          <button (click)="setActiveTab('addresses')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'addresses'">
-            <i class="bi bi-geo-alt me-2"></i> Direcciones
-          </button>
-          <button (click)="setActiveTab('messages')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'messages'">
-            <i class="bi bi-chat-dots me-2"></i> Chat Soporte
-          </button>
+          
+          @if (!authService.isAdmin()) {
+            <button (click)="setActiveTab('orders')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'orders'">
+              <i class="bi bi-box-seam me-2"></i> Mis Pedidos
+            </button>
+            <button (click)="setActiveTab('addresses')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'addresses'">
+              <i class="bi bi-geo-alt me-2"></i> Direcciones
+            </button>
+            <button (click)="setActiveTab('messages')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'messages'">
+              <i class="bi bi-chat-dots me-2"></i> Chat Soporte
+            </button>
+          }
+          
           <button (click)="logout()" class="list-group-item list-group-item-action border-0 text-danger">
             <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
           </button>
@@ -177,6 +181,11 @@
                           </span>
                         </td>
                         <td class="text-end">
+                          @if (order.estado_pago === 'PAGADO') {
+                            <button class="btn btn-sm btn-outline-danger me-2" (click)="downloadReceipt(order.id_pedido)" title="Descargar Comprobante">
+                              <i class="bi bi-file-pdf"></i>
+                            </button>
+                          }
                           <button class="btn btn-sm btn-primary rounded-circle" (click)="viewOrderDetails(order.id_pedido)">
                             <i class="bi bi-eye"></i>
                           </button>
@@ -224,14 +233,30 @@
                         </span>
                       </div>
                       <hr>
-                      <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted">ID Transacción:</span>
-                        <code class="small">{{ selectedOrder().transaccion_id || 'N/A' }}</code>
-                      </div>
+                      <!-- COMPROBANTE DE PAGO -->
+                      @if (selectedOrder().comprobante_url) {
+                        <div class="mb-4">
+                          <label class="text-muted extra-small text-uppercase fw-bold d-block mb-2">Mi Comprobante de Pago Subido</label>
+                          <div class="text-center bg-white p-2 rounded-3 border">
+                            <a [href]="selectedOrder().comprobante_url" target="_blank" title="Ver imagen completa">
+                              <img [src]="selectedOrder().comprobante_url" class="img-fluid rounded border shadow-sm" style="max-height: 200px;">
+                            </a>
+                          </div>
+                        </div>
+                      }
                       <div class="d-flex justify-content-between fw-bold h4 mb-0 text-success mt-4">
                         <span>Total:</span>
                         <span>S/. {{ selectedOrder().total | number:'1.2-2' }}</span>
                       </div>
+                      @if (selectedOrder().estado_pago === 'PAGADO') {
+                        <button class="btn w-100 mt-4 fw-bold" 
+                                [class.btn-outline-danger]="!selectedOrder().comprobante_pdf_url"
+                                [class.btn-danger]="selectedOrder().comprobante_pdf_url"
+                                (click)="downloadReceipt(selectedOrder().id_pedido)">
+                          <i class="bi bi-file-pdf me-2"></i> 
+                          {{ selectedOrder().comprobante_pdf_url ? 'VER COMPROBANTE PDF' : 'GENERAR COMPROBANTE' }}
+                        </button>
+                      }
                     </div>
                   </div>
                 </div>
@@ -250,13 +275,13 @@
           </div>
 
           <div class="chat-container bg-light rounded-4 overflow-hidden border d-flex flex-column" style="height: 500px;">
-            <div class="chat-messages p-4 flex-grow-1 overflow-auto bg-white" #scrollContainer>
+            <div class="chat-messages p-4 d-flex flex-column bg-white overflow-auto" #scrollContainer style="flex: 1;">
               @if (isMessagesLoading() && messages().length === 0) {
-                <div class="text-center py-5">
+                <div class="text-center my-auto py-5">
                   <div class="spinner-border text-success" role="status"></div>
                 </div>
               } @else if (messages().length === 0) {
-                <div class="text-center py-5 text-muted">
+                <div class="text-center my-auto py-5 text-muted">
                   <i class="bi bi-chat-left-dots fs-1 d-block mb-3 opacity-25"></i>
                   <p>Inicia una conversación con nuestro equipo de soporte.</p>
                 </div>
@@ -282,12 +307,12 @@
             </div>
 
             <!-- Message Input -->
-            <div class="chat-input p-3 bg-light border-top">
+            <div class="chat-input p-3 bg-light border-top flex-shrink-0">
               <form (ngSubmit)="sendMessage()" class="d-flex gap-2">
                 <input type="text" name="messageText" class="form-control rounded-pill border-0 shadow-sm" 
                        placeholder="Escribe tu mensaje aquí..." 
                        [(ngModel)]="newMessage" autocomplete="off">
-                <button type="submit" class="btn btn-success rounded-circle shadow-sm" [disabled]="!newMessage().trim()">
+                <button type="submit" class="btn btn-success rounded-circle shadow-sm flex-shrink-0" style="width: 45px; height: 45px;" [disabled]="!newMessage().trim()">
                   <i class="bi bi-send-fill"></i>
                 </button>
               </form>

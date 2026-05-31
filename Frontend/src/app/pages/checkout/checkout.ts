@@ -18,8 +18,8 @@ import { loadStripe, Stripe, StripeElements, StripeCardElement } from '@stripe/s
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './checkout.html',
-  styleUrl: './checkout.css',
-})
+  styleUrl: './checkout.scss'
+  })
 export class Checkout implements OnInit {
   currentStep = signal<number>(1);
   cartItems = signal<CartItem[]>([]);
@@ -44,8 +44,14 @@ export class Checkout implements OnInit {
   orderPlaced = signal(false);
   selectedShipping = signal<number>(10.00);
   paymentMethod = signal<'yape' | 'plin' | 'transferencia' | 'stripe'>('yape');
+  selectedFile: File | null = null;
 
-  // Stripe
+  receiptType = signal<'BOLETA' | 'FACTURA'>('BOLETA');
+  invoiceData = {
+    ruc: '',
+    razon_social: ''
+  };
+
   stripe: Stripe | null = null;
   elements: StripeElements | null = null;
   cardElement: StripeCardElement | null = null;
@@ -75,6 +81,13 @@ export class Checkout implements OnInit {
     this.initStripe();
   }
 
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+    }
+  }
+
   async initStripe() {
     try {
       this.stripe = await loadStripe(environment.stripePublicKey);
@@ -91,9 +104,7 @@ export class Checkout implements OnInit {
           },
         });
       }
-    } catch (err) {
-      console.error('Error al inicializar Stripe:', err);
-    }
+    } catch (err) {}
   }
 
   mountStripe() {
@@ -123,6 +134,12 @@ export class Checkout implements OnInit {
 
   selectAddress(id: number) {
     this.selectedAddressId.set(id);
+    const selected = this.direcciones().find(d => d.id_direccion === id);
+    if (selected) {
+      // Cálculo automático: 10 soles si es Perú (id_pais=1), 50 si es extranjero
+      const cost = selected.id_pais === 1 ? 10.00 : 50.00;
+      this.selectedShipping.set(cost);
+    }
   }
 
   async addAddress(form: NgForm) {
@@ -135,7 +152,7 @@ export class Checkout implements OnInit {
         this.isProcessing.set(false);
       },
       error: (err: any) => {
-        this.checkoutError.set(err.error?.message || 'Error al guardar direcciÃ³n');
+        this.checkoutError.set(err.error?.message || 'Error al guardar dirección');
         this.isProcessing.set(false);
       }
     });
@@ -143,13 +160,13 @@ export class Checkout implements OnInit {
 
   nextStep() {
     if (this.currentStep() === 1 && !this.selectedAddressId()) {
-      this.checkoutError.set('Selecciona una direcciÃ³n');
+      this.checkoutError.set('Selecciona una dirección');
       return;
     }
     this.checkoutError.set(null);
-    this.currentStep.update(s => s + 1);
+    this.currentStep.set(2);
 
-    if (this.currentStep() === 3 && this.paymentMethod() === 'stripe') {
+    if (this.currentStep() === 2 && this.paymentMethod() === 'stripe') {
       this.mountStripe();
     }
   }
@@ -160,6 +177,7 @@ export class Checkout implements OnInit {
 
   changePaymentMethod(method: 'yape' | 'plin' | 'transferencia' | 'stripe') {
     this.paymentMethod.set(method);
+    this.selectedFile = null;
     if (method === 'stripe') {
       this.mountStripe();
     }
@@ -171,20 +189,31 @@ export class Checkout implements OnInit {
       return;
     }
 
-    this.isProcessing.set(true);
-    const orderData = {
-      id_direccion: this.selectedAddressId(),
-      total: this.total(),
-      metodo_pago: this.paymentMethod(),
-      transaccion_id: 'TRX-' + Date.now(),
-      orderItems: this.cartItems().map(item => ({
-        id_producto: item.id,
-        cantidad: item.quantity,
-        precio_fijo: item.price
-      }))
-    };
+    if (!this.selectedFile) {
+      this.checkoutError.set('Por favor, sube una captura del comprobante de pago.');
+      return;
+    }
 
-    this.orderService.createOrder(orderData).subscribe({
+    this.isProcessing.set(true);
+    
+    const formData = new FormData();
+    formData.append('id_direccion', this.selectedAddressId()?.toString() || '');
+    formData.append('total', this.total().toString());
+    formData.append('metodo_pago', this.paymentMethod());
+    formData.append('transaccion_id', 'TRX-' + Date.now());
+    formData.append('tipo_comprobante', this.receiptType());
+    if (this.receiptType() === 'FACTURA') {
+      formData.append('ruc', this.invoiceData.ruc);
+      formData.append('razon_social', this.invoiceData.razon_social);
+    }
+    formData.append('orderItems', JSON.stringify(this.cartItems().map(item => ({
+      id_producto: item.id,
+      cantidad: item.quantity,
+      precio_fijo: item.price
+    }))));
+    formData.append('voucher', this.selectedFile);
+
+    this.orderService.createOrder(formData).subscribe({
       next: () => this.finishOrder(),
       error: (err: any) => {
         this.checkoutError.set(err.message || 'Error al crear el pedido');
@@ -198,7 +227,6 @@ export class Checkout implements OnInit {
     this.checkoutError.set(null);
 
     try {
-      // 1. Crear el PaymentIntent en el backend
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${this.authService.getToken()}`,
         'Content-Type': 'application/json'
@@ -206,13 +234,12 @@ export class Checkout implements OnInit {
 
       const paymentIntentRes: any = await firstValueFrom(
         this.http.post(`${environment.apiUrl}/orders/create-payment-intent`, {
-          total: this.total() // Enviamos el total en Soles (ej: 45.50)
+          total: this.total()
         }, { headers })
       );
 
       const clientSecret = paymentIntentRes.clientSecret;
 
-      // 2. Confirmar el pago con Stripe
       if (!this.stripe || !this.cardElement) {
         throw new Error('Stripe no se ha inicializado correctamente.');
       }
@@ -227,32 +254,35 @@ export class Checkout implements OnInit {
       });
 
       if (result.error) {
-        // REGISTRO DE PAGO RECHAZADO
         const orderData = {
           id_direccion: this.selectedAddressId(),
           total: this.total(),
           metodo_pago: 'card',
-          estado_pago: 'RECHAZADO', // Indicamos que falló el pago
+          estado_pago: 'RECHAZADO',
           transaccion_id: result.error.payment_intent?.id || 'FALLIDO',
+          tipo_comprobante: this.receiptType(),
+          ruc: this.receiptType() === 'FACTURA' ? this.invoiceData.ruc : null,
+          razon_social: this.receiptType() === 'FACTURA' ? this.invoiceData.razon_social : null,
           orderItems: this.cartItems().map(item => ({
             id_producto: item.id,
             cantidad: item.quantity,
             precio_fijo: item.price
           }))
         };
-        // Opcional: Podrías querer guardar el pedido rechazado o solo mostrar el error
         this.orderService.createOrder(orderData).subscribe(); 
 
         this.checkoutError.set(result.error.message || 'Error en el pago con Stripe');
         this.isProcessing.set(false);
       } else if (result.paymentIntent?.status === 'succeeded') {
-        // REGISTRO DE PAGO EXITOSO
         const orderData = {
           id_direccion: this.selectedAddressId(),
           total: this.total(),
           metodo_pago: 'card',
-          estado_pago: 'PAGADO', // Sincronizamos con tu lógica de BD
+          estado_pago: 'PAGADO',
           transaccion_id: result.paymentIntent.id,
+          tipo_comprobante: this.receiptType(),
+          ruc: this.receiptType() === 'FACTURA' ? this.invoiceData.ruc : null,
+          razon_social: this.receiptType() === 'FACTURA' ? this.invoiceData.razon_social : null,
           orderItems: this.cartItems().map(item => ({
             id_producto: item.id,
             cantidad: item.quantity,

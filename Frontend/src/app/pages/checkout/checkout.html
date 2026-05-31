@@ -12,15 +12,11 @@
             <ul class="nav nav-pills nav-fill mb-4 checkout-steps">
                 <li class="nav-item">
                     <button class="nav-link fw-bold" [class.active]="currentStep() === 1"
-                        [disabled]="currentStep() !== 1">1. Dirección</button>
+                        [disabled]="currentStep() !== 1">1. Envío</button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link fw-bold" [class.active]="currentStep() === 2"
-                        [disabled]="currentStep() < 2">2. Resumen</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link fw-bold" [class.active]="currentStep() === 3"
-                        [disabled]="currentStep() < 3">3. Pago</button>
+                        [disabled]="currentStep() < 2">2. Pago</button>
                 </li>
             </ul>
 
@@ -30,7 +26,8 @@
                 @if (currentStep() === 1) {
                     <div>
                         <h2 class="h4 fw-bold mb-4 text-inkapt-dark">1. Seleccionar Dirección de Envío</h2>   
-
+                        
+                        <!-- Rest of Step 1 remains the same ... -->
                         @if (isLoading()) {
                             <div class="text-center py-4">
                                 <span class="spinner-border text-primary"></span>
@@ -134,105 +131,174 @@
                             <div class="d-grid mt-4">
                                 <button type="button" class="btn btn-primary btn-lg fw-bold" (click)="nextStep()"
                                     [disabled]="!selectedAddressId()">
-                                    Continuar al Resumen
+                                    Continuar al Pago
                                 </button>
                             </div>
                         }
                     </div>
                 }
 
-                <!-- STEP 2: SUMMARY -->
+                <!-- STEP 2: PAYMENT (Previously Step 3) -->
                 @if (currentStep() === 2) {
                     <div>
-                        <h2 class="h4 fw-bold mb-4 text-inkapt-dark">Resumen de Productos</h2>
-
-                        <ul class="list-group mb-4">
-                            @for (item of cartItems(); track item.id) {
-                                <li class="list-group-item d-flex justify-content-between align-items-center">  
-                                    <span>{{ item.quantity }} x {{ item.name }}</span>
-                                    <span class="fw-bold">S/. {{ (item.price * item.quantity) | number:'1.2-2' }}</span>
-                                </li>
-                            }
-                        </ul>
-
-                        <div class="d-flex justify-content-between mt-4">
-                            <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">       
-                                Volver
-                            </button>
-                            <button type="button" class="btn btn-primary fw-bold" (click)="nextStep()">
-                                Continuar al Pago
-                            </button>
-                        </div>
-                    </div>
-                }
-
-                <!-- STEP 3: PAYMENT -->
-                @if (currentStep() === 3) {
-                    <div>
-                        <h2 class="h4 fw-bold mb-4 text-inkapt-dark">Seleccionar Pago</h2>
+                        <h2 class="h4 fw-bold mb-4 text-inkapt-dark">2. Seleccionar Método de Pago</h2>
 
                         @if (checkoutError()) {
-                            <div class="alert alert-danger text-center">{{ checkoutError() }}</div>
+                            <div class="alert alert-danger text-center animate__animated animate__shakeX">
+                                <i class="bi bi-exclamation-triangle me-2"></i> {{ checkoutError() }}
+                            </div>
                         }
 
                         @if (orderPlaced()) {
-                            <div class="alert alert-success text-center py-5">
-                                <i class="bi bi-check-circle-fill fs-1"></i>
-                                <h4 class="mt-3">¡Pedido Realizado con Éxito!</h4>
-                                <p>Gracias por tu compra. Redirigiendo...</p>
+                            <div class="alert alert-success text-center py-5 shadow-sm rounded-4">
+                                <i class="bi bi-check-circle-fill fs-1 d-block mb-3"></i>
+                                <h4 class="fw-bold">¡Pedido Realizado con Éxito!</h4>
+                                <p class="mb-0 text-muted">Gracias por tu compra. Estamos procesando tu pedido.</p>
                             </div>
                         }
 
                         @if (!orderPlaced()) {
-                            <div>
+                            <div class="animate__animated animate__fadeIn">
                                 <div class="row g-3 mb-4">
-                                    <div class="col-md-3">
-                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center" [class.btn-success]="paymentMethod() === 'yape'" (click)="changePaymentMethod('yape')">
-                                            <i class="bi bi-qr-code fs-3 mb-2"></i>
-                                            <span>Yape</span>
+                                    <div class="col-6 col-md-3">
+                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center rounded-4 transition-all" 
+                                            [class.btn-success]="paymentMethod() === 'yape'" 
+                                            [class.shadow-sm]="paymentMethod() === 'yape'"
+                                            (click)="changePaymentMethod('yape')">
+                                            <img src="assets/yape-logo.png" alt="Yape" height="32" class="mb-2">
+                                            <span class="small fw-bold">Yape</span>
                                         </button>
                                     </div>
-                                    <div class="col-md-3">
-                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center" [class.btn-success]="paymentMethod() === 'plin'" (click)="changePaymentMethod('plin')">
-                                            <i class="bi bi-qr-code-scan fs-3 mb-2"></i>
-                                            <span>Plin</span>
+                                    <div class="col-6 col-md-3">
+                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center rounded-4 transition-all" 
+                                            [class.btn-success]="paymentMethod() === 'plin'" 
+                                            [class.shadow-sm]="paymentMethod() === 'plin'"
+                                            (click)="changePaymentMethod('plin')">
+                                            <img src="assets/plin-logo.png" alt="Plin" height="32" class="mb-2">
+                                            <span class="small fw-bold">Plin</span>
                                         </button>
                                     </div>
-                                    <div class="col-md-3">
-                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center" [class.btn-success]="paymentMethod() === 'transferencia'" (click)="changePaymentMethod('transferencia')">
+                                    <div class="col-6 col-md-3">
+                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center rounded-4 transition-all" 
+                                            [class.btn-success]="paymentMethod() === 'transferencia'" 
+                                            [class.shadow-sm]="paymentMethod() === 'transferencia'"
+                                            (click)="changePaymentMethod('transferencia')">
                                             <i class="bi bi-bank fs-3 mb-2"></i>
-                                            <span>Transf.</span>
+                                            <span class="small fw-bold">Transf.</span>
                                         </button>
                                     </div>
-                                    <div class="col-md-3">
-                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center" [class.btn-success]="paymentMethod() === 'stripe'" (click)="changePaymentMethod('stripe')">
+                                    <div class="col-6 col-md-3">
+                                        <button class="btn w-100 border p-3 d-flex flex-column align-items-center rounded-4 transition-all" 
+                                            [class.btn-success]="paymentMethod() === 'stripe'" 
+                                            [class.shadow-sm]="paymentMethod() === 'stripe'"
+                                            (click)="changePaymentMethod('stripe')">
                                             <i class="bi bi-credit-card fs-3 mb-2"></i>
-                                            <span>Stripe</span>
+                                            <span class="small fw-bold">Tarjeta</span>
                                         </button>
                                     </div>
                                 </div>
 
-                                <!-- STRIPE ELEMENT -->
-                                @if (paymentMethod() === 'stripe') {
-                                    <div class="mb-4 p-4 border rounded-4 bg-light shadow-sm animate__animated animate__fadeIn">
-                                        <label class="form-label fw-bold mb-3">Información de Tarjeta (Stripe)</label>
-                                        <div id="card-element" class="form-control p-3">
-                                            <!-- Stripe Element will be mounted here -->
+                                <!-- Payment Method Instructions -->
+                                <div class="mb-4 p-4 border rounded-4 bg-light shadow-sm">
+                                    @if (paymentMethod() === 'yape') {
+                                        <div class="text-center animate__animated animate__fadeIn">
+                                            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Escanea para pagar con Yape</h6>
+                                            <img src="/public/assets/yape_qr_default.jpg" alt="QR Yape" class="img-fluid rounded-3 border mb-3 shadow-sm" style="max-height: 250px;">
+                                            <p class="mb-1 fw-bold">Pure Inka Foods S.A.C.</p>
+                                            <p class="text-muted small mb-0">Total a pagar: <span class="text-success fw-bold">S/. {{ total() | number:'1.2-2' }}</span></p>
                                         </div>
-                                        <div class="mt-2 small text-muted">
-                                            <i class="bi bi-shield-lock me-1"></i> Pago 100% seguro procesado por Stripe.
+                                    }
+                                    @if (paymentMethod() === 'plin') {
+                                        <div class="text-center animate__animated animate__fadeIn">
+                                            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Escanea para pagar con Plin</h6>
+                                            <img src="/public/assets/plin_qr_default.jpg" alt="QR Plin" class="img-fluid rounded-3 border mb-3 shadow-sm" style="max-height: 250px;">
+                                            <p class="mb-1 fw-bold">Pure Inka Foods S.A.C.</p>
+                                            <p class="text-muted small mb-0">Total a pagar: <span class="text-success fw-bold">S/. {{ total() | number:'1.2-2' }}</span></p>
                                         </div>
+                                    }
+                                    @if (paymentMethod() === 'transferencia') {
+                                        <div class="animate__animated animate__fadeIn">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <img src="/public/assets/BCP.png" alt="BCP" height="25" class="me-2">
+                                                <h6 class="fw-bold mb-0 text-uppercase small text-muted">Datos de Transferencia BCP</h6>
+                                            </div>
+                                            <div class="bg-white p-3 rounded-3 border">
+                                                <div class="mb-2">
+                                                    <span class="text-muted small d-block">Cuenta Corriente Soles:</span>
+                                                    <span class="fw-bold">191-12345678-0-12</span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="text-muted small d-block">CCI:</span>
+                                                    <span class="fw-bold">002-191-0012345678012-55</span>
+                                                </div>
+                                                <div>
+                                                    <span class="text-muted small d-block">Titular:</span>
+                                                    <span class="fw-bold">Pure Inka Foods S.A.C.</span>
+                                                </div>
+                                            </div>
+                                            <p class="mt-3 text-muted small mb-0">Total a transferir: <span class="text-success fw-bold">S/. {{ total() | number:'1.2-2' }}</span></p>
+                                        </div>
+                                    }
+                                    @if (paymentMethod() === 'stripe') {
+                                        <div class="animate__animated animate__fadeIn">
+                                            <h6 class="fw-bold mb-3 text-uppercase small text-muted">Información de Tarjeta (Stripe)</h6>
+                                            <div id="card-element" class="form-control p-3 bg-white border"></div>
+                                            <div class="mt-3 small text-muted">
+                                                <i class="bi bi-shield-lock me-1"></i> Pago seguro cifrado de extremo a extremo.
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <!-- RECEIPT TYPE SELECTION -->
+                                    <div class="mt-4 pt-4 border-top">
+                                        <label class="form-label fw-bold small text-uppercase text-muted d-block mb-3">Tipo de Comprobante</label>
+                                        <div class="d-flex gap-3 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="receiptType" id="boleta" value="BOLETA" [(ngModel)]="receiptType">
+                                                <label class="form-check-label" for="boleta">Boleta</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="receiptType" id="factura" value="FACTURA" [(ngModel)]="receiptType">
+                                                <label class="form-check-label" for="factura">Factura</label>
+                                            </div>
+                                        </div>
+
+                                        @if (receiptType() === 'FACTURA') {
+                                            <div class="bg-white p-3 rounded-3 border animate__animated animate__fadeIn">
+                                                <div class="mb-2">
+                                                    <label class="form-label small text-muted">RUC</label>
+                                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="invoiceData.ruc" placeholder="Ej: 10490595932" maxlength="11">
+                                                </div>
+                                                <div>
+                                                    <label class="form-label small text-muted">Razón Social</label>
+                                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="invoiceData.razon_social" placeholder="Ej: Empresa S.A.C.">
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
-                                }
+
+                                    <!-- VOUCHER UPLOAD (Required for Yape, Plin, Transfer) -->
+                                    @if (paymentMethod() !== 'stripe') {
+                                        <div class="mt-4 pt-4 border-top">
+                                            <label class="form-label fw-bold small text-uppercase text-muted d-block mb-3">
+                                                <i class="bi bi-camera me-2"></i>Subir Comprobante de Pago
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*">
+                                            </div>
+                                            <p class="extra-small text-muted mt-2 mb-0">Sube una captura de pantalla clara del pago realizado para validar tu pedido.</p>
+                                        </div>
+                                    }
+                                </div>
 
                                 <div class="d-flex justify-content-between mt-5">
-                                    <button type="button" class="btn btn-outline-secondary" (click)="prevStep()">Volver</button>
-                                    <button type="button" class="btn btn-success btn-lg fw-bold px-5" 
-                                        (click)="placeOrder()" [disabled]="isProcessing()">     
+                                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="prevStep()">Volver</button>
+                                    <button type="button" class="btn btn-success btn-lg fw-bold px-5 rounded-pill shadow-sm" 
+                                        (click)="placeOrder()" [disabled]="isProcessing() || (paymentMethod() !== 'stripe' && !selectedFile)">     
                                         @if (isProcessing()) {
                                             <span class="spinner-border spinner-border-sm me-2"></span>
                                         }
-                                        {{ isProcessing() ? 'Procesando...' : 'Confirmar Pedido (S/. ' + (total() | number:'1.2-2') + ')' }}
+                                        {{ isProcessing() ? 'Procesando...' : 'Confirmar Pedido' }}
                                     </button>
                                 </div>
                             </div>
@@ -246,19 +312,38 @@
         <!-- Summary Column -->
         <div class="col-lg-5">
             <div class="card p-4 shadow-lg sticky-top" style="top: 100px;">
-                <h3 class="h4 fw-bold mb-4">Resumen del Pedido</h3>
+                <h3 class="h4 fw-bold mb-4 border-bottom pb-2">Tu Pedido</h3>
+                
+                <div class="order-items-list mb-4" style="max-height: 300px; overflow-y: auto;">
+                    @for (item of cartItems(); track item.id) {
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-1 me-3 text-center" style="width: 40px;">
+                                    <span class="small fw-bold">{{ item.quantity }}x</span>
+                                </div>
+                                <span class="small text-inkapt-dark">{{ item.name }}</span>
+                            </div>
+                            <span class="small fw-bold">S/. {{ (item.price * item.quantity) | number:'1.2-2' }}</span>
+                        </div>
+                    }
+                </div>
+
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Subtotal</span>
+                    <span class="text-muted">Subtotal</span>
                     <span>S/. {{ subtotal() | number:'1.2-2' }}</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Envío</span>
-                    <span>S/. {{ selectedShipping() | number:'1.2-2' }}</span>
+                    <span class="text-muted">Costo de Envío</span>
+                    <span class="text-success fw-bold">S/. {{ selectedShipping() | number:'1.2-2' }}</span>
                 </div>
-                <hr>
-                <div class="d-flex justify-content-between mb-2 fw-bold h5">
+                <hr class="my-3">
+                <div class="d-flex justify-content-between mb-2 fw-bold h4 text-inkapt-primary">
                     <span>Total</span>
                     <span>S/. {{ total() | number:'1.2-2' }}</span>
+                </div>
+                
+                <div class="mt-4 p-3 bg-light rounded-3 border">
+                    <p class="small text-muted mb-0"><i class="bi bi-shield-check me-2"></i>Pago 100% seguro. Tus datos están protegidos por encriptación SSL.</p>
                 </div>
             </div>
         </div>

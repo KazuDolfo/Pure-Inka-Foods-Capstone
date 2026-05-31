@@ -3,8 +3,8 @@
   <!-- Header with Filters -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-      <h2 class="fw-bold mb-1">Panel de Control</h2>
-      <p class="text-muted small">Resumen general del rendimiento de PureInka</p>
+      <h2 class="fw-bold mb-1 text-inkapt-dark">Resumen del Negocio</h2>
+      <p class="text-muted small">Métricas de rendimiento en tiempo real</p>
     </div>
     <div class="d-flex gap-2">
       <select class="form-select border-0 shadow-sm rounded-pill px-3" [(ngModel)]="dateRange" (change)="loadDashboardData(dateRange())">
@@ -27,9 +27,9 @@
           <div class="icon-box bg-success bg-opacity-10 text-success rounded-3 p-2">
             <i class="bi bi-currency-dollar fs-4"></i>
           </div>
-          <span class="badge bg-success bg-opacity-10 text-success rounded-pill">+12%</span>
+          <i class="bi bi-graph-up text-success"></i>
         </div>
-        <h6 class="text-muted small text-uppercase fw-bold mb-1">Total Ventas</h6>
+        <h6 class="text-muted small text-uppercase fw-bold mb-1">Ingresos</h6>
         <h3 class="fw-bold mb-0">S/. {{ totalSales() | number:'1.2-2' }}</h3>
       </div>
     </div>
@@ -38,11 +38,11 @@
       <div class="stat-card p-4 rounded-4 shadow-sm border-0 bg-white h-100">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="icon-box bg-warning bg-opacity-10 text-warning rounded-3 p-2">
-            <i class="bi bi-clock-history fs-4"></i>
+            <i class="bi bi-cart-check fs-4"></i>
           </div>
-          <span class="text-muted small">Pendientes</span>
+          <span class="text-muted small">Total</span>
         </div>
-        <h6 class="text-muted small text-uppercase fw-bold mb-1">Pedidos</h6>
+        <h6 class="text-muted small text-uppercase fw-bold mb-1">Pedidos Pendientes</h6>
         <h3 class="fw-bold mb-0">{{ pendingOrders() }}</h3>
       </div>
     </div>
@@ -51,11 +51,11 @@
       <div class="stat-card p-4 rounded-4 shadow-sm border-0 bg-white h-100">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="icon-box bg-danger bg-opacity-10 text-danger rounded-3 p-2">
-            <i class="bi bi-exclamation-triangle fs-4"></i>
+            <i class="bi bi-box-seam fs-4"></i>
           </div>
-          <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">Crítico</span>
+          <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill">Alerta</span>
         </div>
-        <h6 class="text-muted small text-uppercase fw-bold mb-1">Stock Bajo</h6>
+        <h6 class="text-muted small text-uppercase fw-bold mb-1">Stock Crítico</h6>
         <h3 class="fw-bold mb-0">{{ lowStockCount() }}</h3>
       </div>
     </div>
@@ -64,50 +64,67 @@
       <div class="stat-card p-4 rounded-4 shadow-sm border-0 bg-white h-100">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="icon-box bg-primary bg-opacity-10 text-primary rounded-3 p-2">
-            <i class="bi bi-chat-dots fs-4"></i>
+            <i class="bi bi-people fs-4"></i>
           </div>
-          <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill">Activos</span>
+          <i class="bi bi-person-plus text-primary"></i>
         </div>
-        <h6 class="text-muted small text-uppercase fw-bold mb-1">Chats Abiertos</h6>
+        <h6 class="text-muted small text-uppercase fw-bold mb-1">Interacciones</h6>
         <h3 class="fw-bold mb-0">{{ activeChats() }}</h3>
       </div>
     </div>
   </div>
 
-  <!-- Charts Row -->
+  <!-- Main Charts Row -->
   <div class="row g-4 mb-4">
     <!-- Sales Timeline -->
     <div class="col-lg-8">
       <div class="card p-4 border-0 shadow-sm rounded-4 h-100 bg-white">
-        <h5 class="fw-bold mb-4">Rendimiento de Ventas</h5>
+        <h5 class="fw-bold mb-4">Evolución de Ventas</h5>
         <div class="chart-container" style="position: relative; height: 300px;">
           <canvas #salesChart></canvas>
         </div>
       </div>
     </div>
 
-    <!-- Category Doughnut -->
+    <!-- Category Distribution -->
     <div class="col-lg-4">
-      <div class="card p-4 border-0 shadow-sm rounded-4 h-100 bg-white text-center">
-        <h5 class="fw-bold mb-4">Ventas por Categoría</h5>
-        <div class="chart-container" style="position: relative; height: 250px;">
+      <div class="card p-4 border-0 shadow-sm rounded-4 h-100 bg-white">
+        <h5 class="fw-bold mb-4 text-center">Ventas por Categoría</h5>
+        <div class="chart-container" style="position: relative; height: 280px;">
           <canvas #categoryChart></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Heatmap / Geographical (Coming soon UI) -->
+  <!-- New Dynamic Metrics -->
   <div class="row g-4">
-    <div class="col-12">
-      <div class="card p-5 border-0 shadow-sm rounded-4 bg-white text-center">
-        <div class="py-4">
-          <i class="bi bi-map fs-1 text-success opacity-25 mb-3"></i>
-          <h5 class="fw-bold">Ubicación Geográfica de Pedidos</h5>
-          <p class="text-muted">Próximamente: Visualiza de dónde vienen tus clientes en tiempo real.</p>
-          <div class="progress mx-auto" style="width: 200px; height: 6px;">
-            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" style="width: 75%"></div>
-          </div>
+    <!-- User Registrations -->
+    <div class="col-md-4">
+      <div class="card p-4 border-0 shadow-sm rounded-4 bg-white h-100">
+        <h6 class="fw-bold mb-3">Nuevos Usuarios</h6>
+        <div class="chart-container" style="position: relative; height: 200px;">
+          <canvas #usersChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="col-md-4">
+      <div class="card p-4 border-0 shadow-sm rounded-4 bg-white h-100">
+        <h6 class="fw-bold mb-3">Productos más Vendidos</h6>
+        <div class="chart-container" style="position: relative; height: 200px;">
+          <canvas #productsChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Methods -->
+    <div class="col-md-4">
+      <div class="card p-4 border-0 shadow-sm rounded-4 bg-white h-100">
+        <h6 class="fw-bold mb-3">Métodos de Pago más Usados</h6>
+        <div class="chart-container" style="position: relative; height: 200px;">
+          <canvas #paymentsChart></canvas>
         </div>
       </div>
     </div>

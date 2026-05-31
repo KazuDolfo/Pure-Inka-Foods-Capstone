@@ -1,34 +1,53 @@
 @use 'variables' as v;
 
-// Estilo base para el botón principal de la aplicación
-.btn-primary {
-    background-color: v.$primary !important;
-    border-color: v.$primary !important;
-    color: white !important;
-    font-weight: bold;
+.btn-premium {
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 700;
     text-transform: uppercase;
-    padding: 0.75rem 1.5rem;
-    transition: background-color 0.3s, border-color 0.3s;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 
-    &:hover:not(:disabled) {
-        background-color: v.$inkapt-orange-hover !important;
-        border-color: v.$inkapt-orange-hover !important;
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
 
-    &:disabled {
-        opacity: 0.7;
+    &:active {
+        transform: translateY(0);
     }
 }
 
-// Botón secundario (outline)
-.btn-outline-success {
-    border-color: v.$success;
-    color: v.$success;
-    font-weight: bold;
-    text-transform: uppercase;
+.btn-success {
+    background-color: v.$inkapt-primary;
+    border: none;
+    color: white;
 
     &:hover {
-        background-color: v.$success;
+        background-color: #14440c;
         color: white;
+    }
+}
+
+.btn-outline-success {
+    border: 2px solid v.$inkapt-primary;
+    color: v.$inkapt-primary;
+    background: transparent;
+
+    &:hover {
+        background-color: v.$inkapt-primary;
+        color: white;
+    }
+}
+
+.btn-light {
+    background-color: white;
+    color: v.$inkapt-primary;
+    border: none;
+
+    &:hover {
+        background-color: v.$inkapt-gray-light;
     }
 }

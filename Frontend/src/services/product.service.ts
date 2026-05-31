@@ -26,11 +26,17 @@ export class ProductService {
   private API_PRODUCTS_URL = `${environment.apiUrl}/products`;
   private API_CATEGORIES_URL = `${environment.apiUrl}/categories`; 
 
-  async loadProducts(): Promise<void> {
+  async loadProducts(search?: string, category?: string): Promise<void> {
     this.loadingProducts.set(true);
     this.errorProducts.set(null);
     try {
-      const response = await firstValueFrom(this.http.get<ProductsApiResponse>(this.API_PRODUCTS_URL));
+      let url = this.API_PRODUCTS_URL;
+      const params = [];
+      if (search) params.push(`search=${encodeURIComponent(search)}`);
+      if (category) params.push(`category=${category}`);
+      if (params.length > 0) url += `?${params.join('&')}`;
+
+      const response = await firstValueFrom(this.http.get<ProductsApiResponse>(url));
       if (response.success && Array.isArray(response.data)) {
         this.products.set(response.data.map(p => this.mapApiProductToProduct(p)));
       } else {
@@ -68,7 +74,7 @@ export class ProductService {
     );
   }
 
-  private mapApiProductToProduct(apiProduct: ApiProduct): Product {
+  private mapApiProductToProduct(apiProduct: any): Product {
     return {
       id: apiProduct.id_producto,
       sku: apiProduct.sku,
@@ -77,8 +83,10 @@ export class ProductService {
       description: apiProduct.descripcion || '',
       image: this.buildImageUrl(apiProduct.imagen_url),
       stock: apiProduct.stock_actual,
+      stock_actual: apiProduct.stock_actual,
       isActive: apiProduct.activo,
       id_categoria: apiProduct.id_categoria,
+      category_name: apiProduct.category_name,
       isNew: false,
       rating: 0
     };

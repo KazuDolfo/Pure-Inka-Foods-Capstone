@@ -5,8 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../../services/auth/auth.service';
 import { Usuario } from '../../../models/usuario.model'; 
-import { PageHeader } from '../../components/page-header/page-header';
-import { InfoCard } from '../../components/info-card/info-card';
+
+import { RouterModule } from '@angular/router';
 
 // Payload que se envía al backend
 interface MessagePayload {
@@ -20,7 +20,7 @@ interface MessagePayload {
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, FormsModule, PageHeader, InfoCard],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './contact.html',
   styleUrl: './contact.scss',
 })

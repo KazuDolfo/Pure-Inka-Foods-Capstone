@@ -12,12 +12,20 @@ import { AuthService } from '../../../services/auth/auth.service';
   styleUrl: './auth.css',
 })
 export class Auth {
-  currentView = signal<'login' | 'register'>('login');
+  currentView = signal<'login' | 'register' | 'recovery'>('login');
+  recoveryStep = signal<1 | 2 | 3>(1);
   showAdminModal = signal(false);
 
   loginData = { email: '', password: '' };
   registerData = { name: '', email: '', password: '', confirmPassword: '' };
   adminLoginData = { email: '', password: '' };
+  
+  recoveryData = {
+    identifier: '', 
+    code: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
 
   isSubmitting = false;
   authMessage: string | null = null;
@@ -30,10 +38,89 @@ export class Auth {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  switchView(view: 'login' | 'register'): void {
+  switchView(view: 'login' | 'register' | 'recovery'): void {
     this.currentView.set(view);
+    this.recoveryStep.set(1);
     this.authMessage = null;
     this.messageType = null;
+  }
+
+  sendRecoveryCode(): void {
+    if (!this.recoveryData.identifier) {
+      this.authMessage = 'Ingresa tu correo o teléfono.';
+      this.messageType = 'error';
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.authService.forgotPassword(this.recoveryData.identifier).subscribe({
+      next: (res) => {
+        this.isSubmitting = false;
+        this.authMessage = res.message;
+        this.messageType = 'success';
+        this.recoveryStep.set(2);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.authMessage = err.error?.message || 'Error al enviar código.';
+        this.messageType = 'error';
+      }
+    });
+  }
+
+  verifyCode(): void {
+    if (!this.recoveryData.code || this.recoveryData.code.length !== 6) {
+      this.authMessage = 'Ingresa el código de 6 dígitos.';
+      this.messageType = 'error';
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.authService.verifyCode(this.recoveryData.identifier, this.recoveryData.code).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.authMessage = 'Código verificado. Ingresa tu nueva contraseña.';
+        this.messageType = 'success';
+        this.recoveryStep.set(3);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.authMessage = err.error?.message || 'Código incorrecto.';
+        this.messageType = 'error';
+      }
+    });
+  }
+
+  resetPassword(): void {
+    if (this.recoveryData.newPassword.length < 6) {
+      this.authMessage = 'La contraseña debe tener al menos 6 caracteres.';
+      this.messageType = 'error';
+      return;
+    }
+
+    if (this.recoveryData.newPassword !== this.recoveryData.confirmPassword) {
+      this.authMessage = 'Las contraseñas no coinciden.';
+      this.messageType = 'error';
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.authService.resetPassword({
+      identifier: this.recoveryData.identifier,
+      code: this.recoveryData.code,
+      newPassword: this.recoveryData.newPassword
+    }).subscribe({
+      next: (res) => {
+        this.isSubmitting = false;
+        alert('Contraseña restablecida con éxito. Inicia sesión.');
+        this.switchView('login');
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.authMessage = err.error?.message || 'Error al restablecer.';
+        this.messageType = 'error';
+      }
+    });
   }
 
   openAdminModal(): void {
@@ -54,21 +141,15 @@ export class Auth {
     }
 
     this.isSubmittingAdmin = true;
-    this.authService.login(this.adminLoginData).subscribe({
+    this.authService.login(this.adminLoginData, true).subscribe({
       next: () => {
         this.isSubmittingAdmin = false;
-        if (this.authService.isAdmin()) {
-          this.router.navigate(['/admin']);
-          this.closeAdminModal();
-        } else {
-          this.adminAuthMessage = 'No tienes permisos de administrador.';
-          this.adminMessageType = 'error';
-          this.authService.logout();
-        }
+        this.router.navigate(['/admin']);
+        this.closeAdminModal();
       },
       error: (err) => {
         this.isSubmittingAdmin = false;
-        this.adminAuthMessage = err.error?.message || 'Error de autenticaciÃ³n.';
+        this.adminAuthMessage = err.error?.message || 'Error en el acceso admin.';
         this.adminMessageType = 'error';
       }
     });
@@ -82,22 +163,35 @@ export class Auth {
     }
 
     this.isSubmitting = true;
-    this.authService.login(this.loginData).subscribe({
+    this.authService.login(this.loginData, false).subscribe({
       next: () => {
         this.isSubmitting = false;
         this.router.navigate(['/']);
       },
       error: (err) => {
         this.isSubmitting = false;
-        this.authMessage = err.error?.message || 'Error al iniciar sesiÃ³n.';
+        this.authMessage = err.error?.message || 'Error al iniciar sesión.';
         this.messageType = 'error';
       }
     });
   }
 
   signUp(): void {
+    const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+    if (!emailRegex.test(this.registerData.email)) {
+      this.authMessage = 'El formato del correo electrónico no es válido.';
+      this.messageType = 'error';
+      return;
+    }
+
+    if (!this.registerData.password || this.registerData.password.length < 6) {
+      this.authMessage = 'La contraseña debe tener al menos 6 caracteres.';
+      this.messageType = 'error';
+      return;
+    }
+
     if (this.registerData.password !== this.registerData.confirmPassword) {
-      this.authMessage = 'Las contraseÃ±as no coinciden.';
+      this.authMessage = 'Las contraseñas no coinciden.';
       this.messageType = 'error';
       return;
     }

@@ -1,15 +1,15 @@
 // src/app/components/product-card/product-card.ts
 import { Component, Input, computed } from '@angular/core';
-import { CommonModule, NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Product } from '../../../models';
 import { CartService } from '../../../services/cart.service';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, NgClass],
+  imports: [CommonModule],
   templateUrl: './product-card.html',
-  styleUrls: ['./product-card.css'] // ✅ corregido (plural)
+  styleUrl: './product-card.scss'
 })
 export class ProductCard {
   @Input({ required: true }) product!: Product;

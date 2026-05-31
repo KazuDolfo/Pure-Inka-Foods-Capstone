@@ -1,7 +1,7 @@
-import { Component, OnInit, signal, ElementRef, ViewChild, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, signal, ElementRef, ViewChild, inject, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
 import { UserDataService } from '../../../services/user-data.service';
 import { Pedido, Direccion, Pais, Mensaje, Conversacion } from '../../../models';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './user-profile.html',
-  styleUrl: './user-profile.css'
+  styleUrl: './user-profile.scss'
 })
 export class UserProfile implements OnInit, OnDestroy {
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
@@ -28,7 +28,6 @@ export class UserProfile implements OnInit, OnDestroy {
 
   activeTab: 'profile' | 'orders' | 'addresses' | 'messages' = 'profile';
   
-  // Datos de usuario
   userData = {
     nombre: '',
     email: '',
@@ -36,12 +35,10 @@ export class UserProfile implements OnInit, OnDestroy {
     rol: ''
   };
 
-  // Pedidos
   userOrders: any[] = [];
   selectedOrder = signal<any | null>(null);
   isDetailLoading = signal(false);
 
-  // Direcciones
   direcciones: Direccion[] = [];
   paises: Pais[] = [];
   showAddressModal = false;
@@ -55,27 +52,40 @@ export class UserProfile implements OnInit, OnDestroy {
     referencia: ''
   };
 
-  // Chat
   messages = signal<Mensaje[]>([]);
   newMessage = signal('');
   isMessagesLoading = signal(false);
   currentConversation = signal<Conversacion | null>(null);
   private socketSubscription?: Subscription;
+  private route = inject(ActivatedRoute);
 
   isLoading = true;
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  // Estados de edición
   isEditingProfile = false;
   isChangingPassword = false;
 
-  // Datos para cambio de contraseña
   passwordData = {
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   };
+
+  constructor() {
+    // Mantener los datos del formulario sincronizados con el usuario autenticado
+    effect(() => {
+      const user = this.authService.getCurrentUser();
+      if (user) {
+        this.userData = {
+          nombre: user.nombre,
+          email: user.email,
+          telefono: user.telefono || '',
+          rol: user.rol
+        };
+      }
+    });
+  }
 
   ngOnInit(): void {
     if (!this.authService.isAuthenticatedUser()) {
@@ -85,6 +95,13 @@ export class UserProfile implements OnInit, OnDestroy {
     }
     this.loadData();
     this.setupSocketListener();
+    
+    // Manejar redirección a pestañas específicas (ej: desde Contacto)
+    this.route.queryParams.subscribe(params => {
+      if (params['tab'] === 'messages') {
+        this.setActiveTab('messages');
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -93,7 +110,6 @@ export class UserProfile implements OnInit, OnDestroy {
 
   setupSocketListener() {
     this.socketSubscription = this.socketService.onMessage().subscribe((msg: Mensaje) => {
-      // Sincronización instantánea: Si recibimos un mensaje de nuestra conversación
       if (this.currentConversation()?.id_conversacion === msg.id_conversacion) {
         this.messages.update(current => [...current, msg]);
         setTimeout(() => this.scrollToBottom(), 50);
@@ -104,16 +120,7 @@ export class UserProfile implements OnInit, OnDestroy {
   async loadData() {
     this.isLoading = true;
     try {
-      const user = this.authService.getCurrentUser();
-      if (user) {
-        this.userData = {
-          nombre: user.nombre,
-          email: user.email,
-          telefono: user.telefono || '',
-          rol: user.rol
-        };
-      }
-
+      // Direcciones, Países y Pedidos se cargan normalmente
       this.userDataService.getAddresses().subscribe((res: any) => this.direcciones = res);
       this.userDataService.getCountries().subscribe((res: any) => this.paises = res);
       this.orderService.getMyOrders().subscribe((res: any) => this.userOrders = res);
@@ -133,7 +140,6 @@ export class UserProfile implements OnInit, OnDestroy {
     }
   }
 
-  // --- MÉTODOS DE PEDIDOS ---
   viewOrderDetails(orderId: number) {
     this.isDetailLoading.set(true);
     this.orderService.getOrderDetails(orderId).subscribe({
@@ -149,6 +155,27 @@ export class UserProfile implements OnInit, OnDestroy {
     this.selectedOrder.set(null);
   }
 
+  downloadReceipt(orderId: number): void {
+    this.orderService.downloadPDF(orderId).subscribe({
+      next: (blob) => {
+        const file = new Blob([blob], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(file);
+        window.open(url, '_blank');
+        
+        // Refrescar datos para actualizar el estado del botón (comprobante_pdf_url)
+        if (this.selectedOrder()) {
+          this.viewOrderDetails(orderId);
+        } else {
+          this.orderService.getMyOrders().subscribe(res => this.userOrders = res);
+        }
+      },
+      error: () => {
+        this.errorMessage = 'No se pudo generar el comprobante';
+        setTimeout(() => this.errorMessage = null, 3000);
+      }
+    });
+  }
+
   getStatusBadgeClass(status: string): string {
     switch (status?.toUpperCase()) {
       case 'PENDIENTE': return 'bg-warning text-dark';
@@ -160,7 +187,6 @@ export class UserProfile implements OnInit, OnDestroy {
     }
   }
 
-  // --- MÉTODOS DE DIRECCIONES ---
   openAddressModal() {
     this.showAddressModal = true;
   }
@@ -179,7 +205,6 @@ export class UserProfile implements OnInit, OnDestroy {
     });
   }
 
-  // --- MÉTODOS DE CHAT ---
   loadMessages() {
     this.isMessagesLoading.set(true);
     this.messageService.getMyConversation().subscribe({
@@ -212,20 +237,24 @@ export class UserProfile implements OnInit, OnDestroy {
       id_receptor: conv?.id_admin || 1
     }).subscribe({
       next: (res) => {
-        // La actualización viene por socket o por el res.data si el backend lo devuelve
-        if (res.success && res.data) {
-          // this.messages.update(m => [...m, res.data]);
-        }
         this.loadMessages();
       },
-      error: (err) => console.error('Error al enviar mensaje:', err)
+      error: (err) => {}
     });
   }
 
   private scrollToBottom(): void {
-    if (this.scrollContainer) {
-      this.scrollContainer.nativeElement.scrollTop = this.scrollContainer.nativeElement.scrollHeight;
-    }
+    setTimeout(() => {
+      try {
+        if (this.scrollContainer) {
+          const el = this.scrollContainer.nativeElement;
+          el.scrollTo({
+            top: el.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      } catch (err) {}
+    }, 100);
   }
 
   logout(): void {
@@ -233,11 +262,9 @@ export class UserProfile implements OnInit, OnDestroy {
     window.location.href = '/auth';
   }
 
-  // --- MÉTODOS DE EDICIÓN ---
   toggleEditProfile() {
     this.isEditingProfile = !this.isEditingProfile;
     if (!this.isEditingProfile) {
-      // Revertir cambios si se cancela
       const user = this.authService.getCurrentUser();
       if (user) {
         this.userData = {

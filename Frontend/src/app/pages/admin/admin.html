@@ -32,16 +32,11 @@
       </li>
     </ul>
     <hr>
-    <div class="dropdown">
-      <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-person-circle fs-4 me-2"></i>
-        <strong>Admin</strong>
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-        <li><a class="dropdown-item" href="/">Ir a Tienda</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="/auth">Cerrar Sesión</a></li>
-      </ul>
+    <div class="mt-auto">
+      <button (click)="logout()" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2 rounded-pill fw-bold">
+        <i class="bi bi-box-arrow-right"></i>
+        CERRAR SESIÓN
+      </button>
     </div>
   </div>
 

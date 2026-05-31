@@ -53,15 +53,15 @@ export class AuthService {
     if (this.token()) this.validateToken();
   }
 
-  login(credentials: LoginRequest): Observable<any> {
-    return this.http.post<AuthResponse>(`${USERS_API_URL}/login`, credentials).pipe(
+  login(credentials: LoginRequest, isAdmin: boolean = false): Observable<any> {
+    const endpoint = isAdmin ? `${USERS_API_URL}/admin-login` : `${USERS_API_URL}/login`;
+    return this.http.post<AuthResponse>(endpoint, credentials).pipe(
       tap(response => {
         if (response.success && response.data) {
           this.handleAuthResponse(response.data);
         }
       }),
       catchError(err => {
-        console.error('Login error:', err);
         return throwError(() => err);
       })
     );
@@ -75,7 +75,6 @@ export class AuthService {
         }
       }),
       catchError(err => {
-        console.error('Register error:', err);
         return throwError(() => err);
       })
     );
@@ -110,8 +109,9 @@ export class AuthService {
         id_usuario: data.id_usuario,
         nombre: data.nombre,
         email: data.email,
-        rol: data.rol.toLowerCase() === 'admin' ? 'administrador' : 'cliente',
-        fecha_registro: ''
+        telefono: data.telefono,
+        rol: data.rol.toLowerCase() === 'admin' || data.rol.toLowerCase() === 'administrador' ? 'administrador' : 'cliente',
+        fecha_registro: data.fecha_registro || ''
       };
       this.currentUser.set(user);
       if (isPlatformBrowser(this.platformId)) {
@@ -149,7 +149,8 @@ export class AuthService {
             id_usuario: apiUser.id_usuario,
             nombre: apiUser.nombre,
             email: apiUser.email,
-            rol: apiUser.rol.toLowerCase() === 'admin' ? 'administrador' : 'cliente',
+            telefono: apiUser.telefono,
+            rol: apiUser.rol.toLowerCase() === 'admin' || apiUser.rol.toLowerCase() === 'administrador' ? 'administrador' : 'cliente',
             fecha_registro: apiUser.fecha_registro || ''
           };
           this.currentUser.set(user);
@@ -169,6 +170,19 @@ export class AuthService {
 
   isAdmin(): boolean {
     return this.currentUser()?.rol === 'administrador';
+  }
+
+  // --- PASSWORD RECOVERY ---
+  forgotPassword(identifier: string): Observable<any> {
+    return this.http.post(`${USERS_API_URL}/forgot-password`, { identifier });
+  }
+
+  verifyCode(identifier: string, code: string): Observable<any> {
+    return this.http.post(`${USERS_API_URL}/verify-code`, { identifier, code });
+  }
+
+  resetPassword(data: any): Observable<any> {
+    return this.http.post(`${USERS_API_URL}/reset-password`, data);
   }
 
   updateUser(userData: any): void {

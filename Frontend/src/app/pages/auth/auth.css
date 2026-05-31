@@ -1,5 +1,7 @@
+@use '../../../styles/variables' as v;
+
 .auth-wrapper {
-  background: #f8f9fa;
+  background: v.$inkapt-body-bg;
   min-height: calc(100vh - 100px);
   display: flex;
   align-items: center;
@@ -8,207 +10,160 @@
 }
 
 .auth-container {
-  background-color: #fff;
-  border-radius: 20px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
   width: 100%;
-  max-width: 1000px;
-  min-height: 600px;
-  display: flex;
+  max-width: 1100px;
+  min-height: 650px;
+}
+
+/* 1. CONTENEDOR DE FORMULARIOS */
+.forms-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
 }
 
 .panel {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  transition: all 0.6s ease-in-out;
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  background-color: #ffffff;
 }
 
-.content {
-  width: 100%;
-  max-width: 400px;
+.login-panel { left: 0; z-index: 10; opacity: 1; }
+.register-panel { left: 0; z-index: 5; opacity: 0; }
+
+.auth-container.register-mode .login-panel { transform: translateX(100%); opacity: 0; z-index: 5; }
+.auth-container.register-mode .register-panel { transform: translateX(100%); opacity: 1; z-index: 10; }
+
+.auth-logo { height: 60px; width: auto; margin-bottom: 20px; }
+
+/* 2. OVERLAY SISTEMA DE DESLIZAMIENTO */
+.overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 100; /* Encima de los formularios */
 }
 
-/* Desktop Styles */
-@media (min-width: 992px) {
-  .panel {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 50%;
-    transition: all 0.6s ease-in-out;
-  }
+.auth-container.register-mode .overlay-container {
+  transform: translateX(-100%);
+}
 
-  .login-panel {
-    left: 0;
-    z-index: 2;
-    opacity: 1;
-  }
+.overlay {
+  background-image: linear-gradient(135deg, rgba(26, 92, 32, 0.92) 0%, rgba(10, 77, 22, 0.88) 100%), url('/assets/banner-palmeras.jpg');
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transition: transform 0.6s ease-in-out;
+}
 
-  .register-panel {
-    left: 0; /* Empieza en el mismo lugar pero oculto */
-    z-index: 1;
-    opacity: 0;
-  }
+.auth-container.register-mode .overlay {
+  transform: translateX(50%);
+}
 
-  /* Estado Registro */
-  .auth-container.register-mode .login-panel {
-    transform: translateX(100%);
-    opacity: 0;
-    z-index: 1;
-  }
+.overlay-panel {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%; /* Representa el 100% del container visible */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 50px;
+  text-align: center;
+  transition: transform 0.6s ease-in-out;
+}
 
-  .auth-container.register-mode .register-panel {
-    transform: translateX(100%);
-    opacity: 1;
-    z-index: 5;
-  }
+/* El panel IZQUIERDO (Invite to Login) vive en la primera mitad del overlay (200%) */
+.overlay-left-panel {
+  left: 0;
+  transform: translateX(-20%);
+}
 
-  .overlay-container {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 50%;
-    height: 100%;
-    overflow: hidden;
-    transition: transform 0.6s ease-in-out;
-    z-index: 100;
-  }
+/* El panel DERECHO (Invite to Register) vive en la segunda mitad del overlay (200%) */
+.overlay-right-panel {
+  right: 0;
+  transform: translateX(0);
+}
 
-  .auth-container.register-mode .overlay-container {
-    transform: translateX(-100%);
-  }
+/* Animaciones Parallax */
+.auth-container.register-mode .overlay-left-panel { transform: translateX(0); }
+.auth-container.register-mode .overlay-right-panel { transform: translateX(20%); }
 
-  .overlay {
-    background: linear-gradient(135deg, #198754 0%, #0a58ca 100%);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    color: #fff;
+/* ESTILOS DE TEXTO (MAX VISIBILIDAD) */
+.overlay-inner {
     position: relative;
-    left: -100%;
-    height: 100%;
-    width: 200%;
-    transform: translateX(0);
-    transition: transform 0.6s ease-in-out;
-  }
+    z-index: 110;
+}
 
-  .auth-container.register-mode .overlay {
-    transform: translateX(50%);
-  }
+.overlay-panel h2 {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 2.5rem !important;
+  margin-bottom: 20px;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
 
-  .overlay-panel {
-    position: absolute;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 0 40px;
-    text-align: center;
-    top: 0;
-    height: 100%;
-    width: 50%;
-    transform: translateX(0);
-    transition: transform 0.6s ease-in-out;
-  }
+.overlay-panel p {
+  color: #ffffff !important;
+  font-size: 1.2rem !important;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
 
-  .overlay-left {
-    transform: translateX(-20%);
-  }
+.btn-outline-light {
+  border: 3px solid #ffffff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px;
+  padding: 15px 45px;
+  background: transparent !important;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  &:hover { background: #ffffff !important; color: v.$inkapt-primary !important; transform: scale(1.05); }
+}
 
-  .auth-container.register-mode .overlay-left {
-    transform: translateX(0);
-  }
+/* Recuperación */
+.auth-container.current-view-recovery {
+  .overlay-container { display: none !important; }
+  .login-panel { width: 100% !important; z-index: 500; left: 0 !important; transform: none !important; }
+  .register-panel { display: none !important; }
+}
 
-  .overlay-right {
-    right: 0;
-    transform: translateX(0);
-  }
-
-  .auth-container.register-mode .overlay-right {
-    transform: translateX(20%);
-  }
+/* Mobile Adjustments */
+@media (max-width: 991px) {
+  .auth-container { display: block; height: auto; min-height: auto; border-radius: 20px; overflow: visible; background: transparent; box-shadow: none; }
+  .forms-container { position: relative; height: auto; }
+  .panel { position: relative; width: 100%; height: auto; padding: 2.5rem 1.5rem; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); opacity: 1 !important; transform: none !important; }
+  .overlay-container { display: none !important; }
+  .register-mode .login-panel { display: none !important; }
+  .register-mode .register-panel { display: flex !important; }
   
-  .mobile-toggle {
-    display: none;
-  }
+  .panel .content h1, .panel .content p, .panel .content label { color: v.$inkapt-dark-text !important; }
 }
 
-/* Mobile & Tablet Styles */
-@media (max-width: 991.98px) {
-  .auth-container {
-    flex-direction: column;
-    min-height: auto;
-    max-width: 500px;
-  }
-
-  .panel {
-    padding: 2rem;
-  }
-
-  .register-panel, .login-panel {
-    display: none;
-  }
-
-  .auth-container:not(.register-mode) .login-panel {
-    display: flex;
-  }
-
-  .auth-container.register-mode .register-panel {
-    display: flex;
-  }
-  
-  .overlay-container {
-    display: none;
-  }
-}
-
-/* Utility Classes */
-.input-group-text {
-  background-color: transparent;
-  border-right: none;
-  color: #198754;
-}
-
-.form-control {
-  border-left: none;
-}
-
-.form-control:focus {
-  border-color: #dee2e6;
-  box-shadow: none;
-}
-
-.form-control:focus + .input-group-text {
-  border-color: #dee2e6;
-}
-
-.btn-success {
-  background-color: #198754;
-  border: none;
-  padding: 12px;
-  transition: transform 0.2s;
-}
-
-.btn-success:hover {
-  background-color: #157347;
-  transform: translateY(-2px);
-}
-
-/* Modal Enhancements */
-.modal {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  border-radius: 15px;
-}
-
-.modal-header {
-  border-radius: 15px 15px 0 0;
-}
+.animate__animated { animation-duration: 0.5s; }
+.letter-spacing-lg { letter-spacing: 0.5rem; }

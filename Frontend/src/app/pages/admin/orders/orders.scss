@@ -1,0 +1,47 @@
+@use '../../../../styles/variables' as v;
+
+.card-premium {
+    border-radius: v.$border-radius-premium;
+    border: none;
+    box-shadow: v.$box-shadow-premium;
+    background: white;
+}
+
+.table {
+    th {
+        background-color: v.$inkapt-gray-light;
+        border: none;
+        color: v.$inkapt-gray-text;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        padding: 15px;
+    }
+    td {
+        padding: 15px;
+        vertical-align: middle;
+        border-color: v.$inkapt-gray-border;
+        font-size: 0.9rem;
+    }
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+
+.order-detail-panel {
+    border-left: 1px solid v.$inkapt-gray-border;
+    height: 100%;
+    background: white;
+}
+
+@media (max-width: 991px) {
+    .order-detail-panel {
+        border-left: none;
+        border-top: 1px solid v.$inkapt-gray-border;
+        margin-top: 20px;
+    }
+}

@@ -9,13 +9,15 @@ import { environment } from '../../../../environments/environment';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './orders.html',
-  styleUrls: ['./orders.css']
+  styleUrl: './orders.scss'
 })
 export class Orders implements OnInit {
   orders = signal<any[]>([]);
   selectedOrder = signal<any | null>(null);
   isLoading = signal(false);
   isDetailLoading = signal(false);
+  isUpdating = signal(false);
+  env = environment;
 
   constructor(
     private orderService: OrderService
@@ -44,6 +46,44 @@ export class Orders implements OnInit {
         this.isDetailLoading.set(false);
       },
       error: () => this.isDetailLoading.set(false)
+    });
+  }
+
+  downloadReceipt(orderId: number): void {
+    this.orderService.downloadPDF(orderId).subscribe({
+      next: (blob) => {
+        const file = new Blob([blob], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(file);
+        window.open(url, '_blank');
+        
+        // Refrescar para actualizar estado del botón
+        if (this.selectedOrder()) {
+          this.viewDetails(orderId);
+        } else {
+          this.loadOrders();
+        }
+      },
+      error: () => alert('Error al generar el PDF')
+    });
+  }
+
+  updateStatus(id: number, paymentStatus: string, shippingStatus: string) {
+    if (!confirm('¿Estás seguro de actualizar el estado de este pedido?')) return;
+    
+    this.isUpdating.set(true);
+    this.orderService.updateOrderStatus(id, {
+      estado_pago: paymentStatus,
+      estado_envio: shippingStatus
+    }).subscribe({
+      next: () => {
+        this.isUpdating.set(false);
+        this.loadOrders();
+        this.viewDetails(id); // Refresh detail view
+      },
+      error: (err) => {
+        alert(err.message);
+        this.isUpdating.set(false);
+      }
     });
   }
 

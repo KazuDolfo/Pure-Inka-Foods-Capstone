@@ -1,15 +1,16 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '../services/auth/auth.guard';
 import { adminGuard } from '../services/auth/admin.guard';
+import { clientGuard } from '../services/auth/client.guard';
 
 export const routes: Routes = [
-  { path: '', loadComponent: () => import('./pages/home/home').then(m => m.Home), title: 'Inicio' },
-  { path: 'shop', loadComponent: () => import('./pages/shop/shop').then(m => m.Shop), title: 'Tienda' },
-  { path: 'about', loadComponent: () => import('./pages/about/about').then(m => m.About), title: 'Nosotros' },
-  { path: 'contact', loadComponent: () => import('./pages/contact/contact').then(m => m.Contact), title: 'Contacto' },
+  { path: '', loadComponent: () => import('./pages/home/home').then(m => m.Home), canActivate: [clientGuard], title: 'Inicio' },
+  { path: 'shop', loadComponent: () => import('./pages/shop/shop').then(m => m.Shop), canActivate: [clientGuard], title: 'Tienda' },
+  { path: 'about', loadComponent: () => import('./pages/about/about').then(m => m.About), canActivate: [clientGuard], title: 'Nosotros' },
+  { path: 'contact', loadComponent: () => import('./pages/contact/contact').then(m => m.Contact), canActivate: [clientGuard], title: 'Contacto' },
   { path: 'user-profile', loadComponent: () => import('./pages/user-profile/user-profile').then(m => m.UserProfile), canActivate: [authGuard], title: 'Mi Perfil' },
   { path: 'auth', loadComponent: () => import('./pages/auth/auth').then(m => m.Auth), title: 'Acceso' },
-  { path: 'checkout', loadComponent: () => import('./pages/checkout/checkout').then(m => m.Checkout), canActivate: [authGuard], title: 'Checkout' },
+  { path: 'checkout', loadComponent: () => import('./pages/checkout/checkout').then(m => m.Checkout), canActivate: [authGuard, clientGuard], title: 'Checkout' },
 
   {
     path: 'admin',

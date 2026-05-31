@@ -1,10 +1,26 @@
-/*
- * Los estilos de esta página ahora se gestionan a través de los ficheros SCSS globales
- * en la carpeta /src/styles.
- *
- * - Las variables de color están en _variables.scss.
- * - Los estilos de botones están en _buttons.scss.
- * - Los estilos de los inputs de búsqueda están en _components.scss.
- *
- * Este archivo se mantiene por si se necesitan estilos específicos para esta página en el futuro.
- */
+@use '../../../styles/variables' as v;
+
+.category-list {
+    .list-group-item {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+        transition: all 0.2s ease;
+        color: v.$inkapt-dark-text;
+
+        &:hover {
+            background-color: v.$inkapt-gray-light;
+            color: v.$inkapt-primary;
+            padding-left: 20px;
+        }
+
+        &.active {
+            background-color: v.$inkapt-primary;
+            color: white;
+            font-weight: 600;
+        }
+    }
+}
+
+.shop-header h1 {
+    letter-spacing: -1px;
+}
