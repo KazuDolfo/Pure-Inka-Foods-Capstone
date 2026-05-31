@@ -74,8 +74,14 @@ CREATE TABLE Pedido (
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
     estado_pago ENUM('PENDIENTE', 'PAGADO', 'RECHAZADO') DEFAULT 'PENDIENTE',
-    estado_envio ENUM('PROCESANDO', 'ENVIADO', 'ENTREGADO', 'ADUANAS') DEFAULT 'PROCESANDO',
+    estado_envio ENUM('PROCESANDO', 'ENVIADO', 'ENTREGADO', 'CANCELADO') DEFAULT 'PROCESANDO',
     transaccion_id VARCHAR(100) UNIQUE,
+    comprobante_url VARCHAR(255),
+    metodo_pago VARCHAR(50),
+    tipo_comprobante ENUM('BOLETA', 'FACTURA') DEFAULT 'BOLETA',
+    ruc VARCHAR(11),
+    razon_social VARCHAR(255),
+    comprobante_pdf_url VARCHAR(255),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
     FOREIGN KEY (id_direccion) REFERENCES Direccion(id_direccion)
 );
