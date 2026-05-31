@@ -5,18 +5,9 @@ const router = express.Router();
 const { getProducts, getProductById, createProduct, updateProductStock, updateProduct, deleteProduct } = require('../controllers/productController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
 
-// Configuración de Multer para almacenamiento de imágenes de productos
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, 'public/uploads/products/');
-  },
-  filename(req, file, cb) {
-    cb(
-      null,
-      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
-    );
-  },
-});
+const { processProductImage } = require('../middlewares/imageMiddleware');
+
+const storage = multer.memoryStorage();
 
 function checkFileType(file, cb) {
   const filetypes = /jpg|jpeg|png|webp/;
@@ -39,8 +30,8 @@ const upload = multer({
 
 router.get('/', getProducts);
 router.get('/:id', getProductById);
-router.post('/', protect, authorize('ADMIN'), upload.single('image'), createProduct);
-router.put('/:id', protect, authorize('ADMIN'), upload.single('image'), updateProduct);
+router.post('/', protect, authorize('ADMIN'), upload.single('image'), processProductImage, createProduct);
+router.put('/:id', protect, authorize('ADMIN'), upload.single('image'), processProductImage, updateProduct);
 router.put('/:id/stock', protect, authorize('ADMIN'), updateProductStock);
 router.delete('/:id', protect, authorize('ADMIN'), deleteProduct);
 

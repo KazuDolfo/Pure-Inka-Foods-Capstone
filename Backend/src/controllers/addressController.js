@@ -1,11 +1,6 @@
 const pool = require('../config/db');
 const asyncHandler = require('express-async-handler');
 
-/**
- * @desc    Obtener lista de países
- * @route   GET /api/addresses/countries
- * @access  Public
- */
 const getCountries = asyncHandler(async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM Pais ORDER BY nombre ASC');
   res.json({
@@ -14,11 +9,6 @@ const getCountries = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Obtener mis direcciones
- * @route   GET /api/addresses
- * @access  Private
- */
 const getMyAddresses = asyncHandler(async (req, res) => {
   const [rows] = await pool.query(
     'SELECT d.*, p.nombre as pais_nombre FROM Direccion d JOIN Pais p ON d.id_pais = p.id_pais WHERE d.id_usuario = ?',
@@ -30,11 +20,6 @@ const getMyAddresses = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Agregar una nueva dirección
- * @route   POST /api/addresses
- * @access  Private
- */
 const addAddress = asyncHandler(async (req, res) => {
   const { 
     id_pais, 

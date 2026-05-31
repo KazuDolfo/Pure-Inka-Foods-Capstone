@@ -1,10 +1,6 @@
 const pool = require('../config/db');
 const asyncHandler = require('express-async-handler');
 
-/**
- * @desc    Obtener resumen de ventas (Ventas totales, Ticket Promedio, Mensuales)
- * @route   GET /api/stats/sales
- */
 const getSalesStats = asyncHandler(async (req, res) => {
   const [summary] = await pool.query(`
     SELECT 
@@ -36,10 +32,6 @@ const getSalesStats = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Distribución de ventas por categoría
- * @route   GET /api/stats/categories
- */
 const getCategoryStats = asyncHandler(async (req, res) => {
   const [rows] = await pool.query(`
     SELECT 
@@ -58,10 +50,6 @@ const getCategoryStats = asyncHandler(async (req, res) => {
   res.json({ success: true, data: rows });
 });
 
-/**
- * @desc    Top de países con más pedidos
- * @route   GET /api/stats/geography
- */
 const getGeoStats = asyncHandler(async (req, res) => {
   const [rows] = await pool.query(`
     SELECT 
@@ -78,10 +66,6 @@ const getGeoStats = asyncHandler(async (req, res) => {
   res.json({ success: true, data: rows });
 });
 
-/**
- * @desc    Alertas de Inventario y Valorización
- * @route   GET /api/stats/inventory
- */
 const getInventoryStats = asyncHandler(async (req, res) => {
   const [alerts] = await pool.query(`
     SELECT id_producto, nombre, stock_actual, sku
@@ -106,10 +90,6 @@ const getInventoryStats = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Obtener resumen para el Dashboard de Administrador
- * @route   GET /api/admin/stats
- */
 const getDashboardSummary = asyncHandler(async (req, res) => {
   const range = req.query.range || '30d';
   let days = 30;
@@ -117,7 +97,6 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
   else if (range === '7d') days = 7;
   else if (range === 'year') days = 365;
 
-  // 1. Indicadores Principales
   const [salesResult] = await pool.query(`
     SELECT IFNULL(SUM(total), 0) as totalSales 
     FROM Pedido 
@@ -141,18 +120,16 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
     FROM Conversacion
   `);
 
-  // 2. Timeline de Ventas (últimos 'days' días)
   const [timelineResult] = await pool.query(`
     SELECT 
       DATE_FORMAT(fecha, '%d/%m') as label,
       SUM(total) as value
     FROM Pedido
     WHERE estado_pago = 'PAGADO' AND fecha >= DATE_SUB(NOW(), INTERVAL ? DAY)
-    GROUP BY label
-    ORDER BY fecha ASC
+    GROUP BY DATE(fecha), label
+    ORDER BY DATE(fecha) ASC
   `, [days]);
 
-  // 3. Ventas por Categoría
   const [categoryResult] = await pool.query(`
     SELECT 
       c.nombre as label,
@@ -165,6 +142,39 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
     GROUP BY c.id_categoria
     ORDER BY value DESC
     LIMIT 5
+  `);
+
+  const [userResult] = await pool.query(`
+    SELECT 
+      DATE_FORMAT(fecha_registro, '%d/%m') as label,
+      COUNT(*) as value
+    FROM Usuario
+    WHERE fecha_registro >= DATE_SUB(NOW(), INTERVAL ? DAY)
+    GROUP BY DATE(fecha_registro), label
+    ORDER BY DATE(fecha_registro) ASC
+  `, [days]);
+
+  const [topProductResult] = await pool.query(`
+    SELECT 
+      p.nombre as label,
+      SUM(dp.cantidad) as value
+    FROM Producto p
+    JOIN DetallePedido dp ON p.id_producto = dp.id_producto
+    JOIN Pedido ped ON dp.id_pedido = ped.id_pedido
+    WHERE ped.estado_pago = 'PAGADO'
+    GROUP BY p.id_producto
+    ORDER BY value DESC
+    LIMIT 5
+  `);
+
+  const [paymentResult] = await pool.query(`
+    SELECT 
+      IFNULL(metodo_pago, 'Otro') as label,
+      COUNT(*) as value
+    FROM Pedido
+    WHERE estado_pago = 'PAGADO'
+    GROUP BY metodo_pago
+    ORDER BY value DESC
   `);
 
   res.json({
@@ -181,6 +191,18 @@ const getDashboardSummary = asyncHandler(async (req, res) => {
       categoryStats: {
         labels: categoryResult.map(c => c.label),
         data: categoryResult.map(c => c.value)
+      },
+      userRegistrations: {
+        labels: userResult.map(u => u.label),
+        data: userResult.map(u => u.value)
+      },
+      topProducts: {
+        labels: topProductResult.map(p => p.label),
+        data: topProductResult.map(p => p.value)
+      },
+      paymentMethods: {
+        labels: paymentResult.map(p => p.label),
+        data: paymentResult.map(p => p.value)
       }
     }
   });

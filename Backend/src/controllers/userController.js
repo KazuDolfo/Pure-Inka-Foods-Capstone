@@ -3,27 +3,28 @@ const pool = require('../config/db');
 const generateToken = require('../utils/generateToken');
 const asyncHandler = require('express-async-handler');
 
-/**
- * @desc    Autenticar usuario y obtener token
- * @route   POST /api/users/login
- * @access  Public
- */
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  // Buscar el usuario por email
   const [rows] = await pool.query('SELECT * FROM Usuario WHERE email = ?', [email]);
   const user = rows[0];
 
-  // Si existe el usuario y la contraseña es correcta
   if (user && (await bcrypt.compare(password, user.contrasena))) {
+    // RESTRICCIÓN: Bloquear Administradores en el Login Normal
+    if (user.rol === 'ADMIN' || user.rol === 'administrador') {
+        res.status(401);
+        throw new Error('Ingrese Por El Acceso de Admin');
+    }
+
     res.json({
       success: true,
       data: {
         id_usuario: user.id_usuario,
         nombre: user.nombre,
         email: user.email,
+        telefono: user.telefono,
         rol: user.rol,
+        fecha_registro: user.fecha_registro,
         token: generateToken(user.id_usuario),
       },
     });
@@ -33,26 +34,29 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Registrar un nuevo usuario
- * @route   POST /api/users
- * @access  Public
- */
 const registerUser = asyncHandler(async (req, res) => {
   const { nombre, email, password, telefono } = req.body;
 
-  // Verificar si el usuario ya existe
+  const emailRegex = /^[^@]+@[^@]+\.[^@]+$/;
+  if (!emailRegex.test(email)) {
+    res.status(400);
+    throw new Error('El formato del correo electrónico no es válido');
+  }
+
+  if (!password || password.length < 6) {
+    res.status(400);
+    throw new Error('La contraseña debe tener al menos 6 caracteres');
+  }
+
   const [existingUser] = await pool.query('SELECT * FROM Usuario WHERE email = ?', [email]);
   if (existingUser.length > 0) {
     res.status(400);
     throw new Error('El usuario ya existe');
   }
 
-  // Hashear la contraseña
   const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_SALT_ROUNDS) || 12);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Insertar el nuevo usuario en la base de datos
   const [result] = await pool.query(
     'INSERT INTO Usuario (nombre, email, contrasena, telefono) VALUES (?, ?, ?, ?)',
     [nombre, email, hashedPassword, telefono]
@@ -67,6 +71,7 @@ const registerUser = asyncHandler(async (req, res) => {
         id_usuario: newUserId,
         nombre,
         email,
+        telefono,
         rol: 'CLIENTE',
         token: generateToken(newUserId),
       },
@@ -77,13 +82,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Obtener el perfil del usuario autenticado
- * @route   GET /api/users/profile
- * @access  Private
- */
 const getUserProfile = asyncHandler(async (req, res) => {
-  // req.user viene del middleware 'protect'
   if (req.user) {
     res.json({
       success: true,
@@ -95,16 +94,10 @@ const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Actualizar el perfil del usuario
- * @route   PUT /api/users/profile
- * @access  Private
- */
 const updateUserProfile = asyncHandler(async (req, res) => {
   const { nombre, email, telefono } = req.body;
   const userId = req.user.id_usuario;
 
-  // Verificar si el email ya está en uso por otro usuario
   if (email && email !== req.user.email) {
     const [existingUser] = await pool.query('SELECT * FROM Usuario WHERE email = ? AND id_usuario != ?', [email, userId]);
     if (existingUser.length > 0) {
@@ -136,21 +129,14 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Actualizar la contraseña del usuario
- * @route   PUT /api/users/password
- * @access  Private
- */
 const updateUserPassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   const userId = req.user.id_usuario;
 
-  // Obtener el usuario actual
   const [rows] = await pool.query('SELECT contrasena FROM Usuario WHERE id_usuario = ?', [userId]);
   const user = rows[0];
 
   if (user && (await bcrypt.compare(currentPassword, user.contrasena))) {
-    // Hashear la nueva contraseña
     const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_SALT_ROUNDS) || 12);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
@@ -174,10 +160,82 @@ const updateUserPassword = asyncHandler(async (req, res) => {
   }
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { identifier } = req.body;
+
+  const [rows] = await pool.query(
+    'SELECT id_usuario, email, telefono FROM Usuario WHERE email = ? OR telefono = ?',
+    [identifier, identifier]
+  );
+  
+  const user = rows[0];
+  if (!user) {
+    res.status(404);
+    throw new Error('No se encontró ningún usuario con ese correo o teléfono');
+  }
+
+  const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiration = new Date(Date.now() + 15 * 60 * 1000);
+
+  await pool.query(
+    'UPDATE Usuario SET codigo_recuperacion = ?, codigo_expiracion = ? WHERE id_usuario = ?',
+    [recoveryCode, expiration, user.id_usuario]
+  );
+
+  res.json({
+    success: true,
+    message: 'Se ha generado un código de recuperación.'
+  });
+});
+
+const verifyResetCode = asyncHandler(async (req, res) => {
+  const { identifier, code } = req.body;
+
+  const [rows] = await pool.query(
+    'SELECT id_usuario FROM Usuario WHERE (email = ? OR telefono = ?) AND codigo_recuperacion = ? AND codigo_expiracion > NOW()',
+    [identifier, identifier, code]
+  );
+
+  if (rows.length > 0) {
+    res.json({ success: true, message: 'Código verificado con éxito' });
+  } else {
+    res.status(400);
+    throw new Error('El código es inválido o ha expirado');
+  }
+});
+
+const resetPasswordWithCode = asyncHandler(async (req, res) => {
+  const { identifier, code, newPassword } = req.body;
+
+  const [rows] = await pool.query(
+    'SELECT id_usuario FROM Usuario WHERE (email = ? OR telefono = ?) AND codigo_recuperacion = ? AND codigo_expiracion > NOW()',
+    [identifier, identifier, code]
+  );
+
+  if (rows.length === 0) {
+    res.status(400);
+    throw new Error('No se pudo verificar la solicitud. Intente nuevamente.');
+  }
+
+  const userId = rows[0].id_usuario;
+  const salt = await bcrypt.genSalt(Number(process.env.BCRYPT_SALT_ROUNDS) || 12);
+  const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+  await pool.query(
+    'UPDATE Usuario SET contrasena = ?, codigo_recuperacion = NULL, codigo_expiracion = NULL WHERE id_usuario = ?',
+    [hashedPassword, userId]
+  );
+
+  res.json({ success: true, message: 'Contraseña restablecida correctamente' });
+});
+
 module.exports = {
   authUser,
   registerUser,
   getUserProfile,
   updateUserProfile,
   updateUserPassword,
+  forgotPassword,
+  verifyResetCode,
+  resetPasswordWithCode
 };

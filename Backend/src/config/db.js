@@ -4,7 +4,7 @@ require('dotenv').config();
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASS || '',
+  password: process.env.DB_PASS || '123456',
   database: process.env.DB_NAME || 'BD_pureinka',
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
@@ -12,14 +12,12 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-// Probar la conexión al iniciar
 pool.getConnection()
   .then(connection => {
-    console.log('✅ Conexión a la base de datos MySQL establecida correctamente.');
     connection.release();
   })
   .catch(err => {
-    console.error('❌ Error al conectar a la base de datos:', err.message);
+    console.error('Database connection error:', err.message);
   });
 
 module.exports = pool;

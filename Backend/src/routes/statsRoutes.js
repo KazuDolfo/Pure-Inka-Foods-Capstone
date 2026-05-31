@@ -4,11 +4,11 @@ const {
   getSalesStats, 
   getCategoryStats, 
   getGeoStats, 
-  getInventoryStats 
+  getInventoryStats,
+  getDashboardSummary
 } = require('../controllers/statsController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
 
-// Proteger todas las rutas: Solo Administradores
 router.use(protect);
 router.use(authorize('ADMIN'));
 
@@ -16,5 +16,6 @@ router.get('/sales', getSalesStats);
 router.get('/categories', getCategoryStats);
 router.get('/geography', getGeoStats);
 router.get('/inventory', getInventoryStats);
+router.get('/dashboard', getDashboardSummary);
 
 module.exports = router;

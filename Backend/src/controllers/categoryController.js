@@ -1,11 +1,6 @@
 const pool = require('../config/db');
 const asyncHandler = require('express-async-handler');
 
-/**
- * @desc    Obtener todas las categorías
- * @route   GET /api/categories
- * @access  Public
- */
 const getCategories = asyncHandler(async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM Categoria');
   res.json({
@@ -14,11 +9,6 @@ const getCategories = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Obtener una categoría por ID
- * @route   GET /api/categories/:id
- * @access  Public
- */
 const getCategoryById = asyncHandler(async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM Categoria WHERE id_categoria = ?', [req.params.id]);
   const category = rows[0];
@@ -34,11 +24,6 @@ const getCategoryById = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Crear una nueva categoría
- * @route   POST /api/categories
- * @access  Private/Admin
- */
 const createCategory = asyncHandler(async (req, res) => {
   const { nombre } = req.body;
 
@@ -63,11 +48,6 @@ const createCategory = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Actualizar una categoría
- * @route   PUT /api/categories/:id
- * @access  Private/Admin
- */
 const updateCategory = asyncHandler(async (req, res) => {
   const { nombre } = req.body;
   const id_categoria = req.params.id;
@@ -86,15 +66,9 @@ const updateCategory = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Eliminar una categoría
- * @route   DELETE /api/categories/:id
- * @access  Private/Admin
- */
 const deleteCategory = asyncHandler(async (req, res) => {
   const id_categoria = req.params.id;
 
-  // Nota: Podrías querer verificar si hay productos asociados antes de eliminar
   const [result] = await pool.query('DELETE FROM Categoria WHERE id_categoria = ?', [id_categoria]);
 
   if (result.affectedRows > 0) {

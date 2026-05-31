@@ -1,24 +1,35 @@
+const fs = require('fs');
+const path = require('path');
 const pool = require('../config/db');
 const asyncHandler = require('express-async-handler');
 
-/**
- * @desc    Obtener todos los productos activos
- * @route   GET /api/products
- * @access  Public
- */
 const getProducts = asyncHandler(async (req, res) => {
-  const [rows] = await pool.query('SELECT * FROM Producto WHERE activo = TRUE');
+  const { search, category } = req.query;
+  let query = `
+    SELECT p.*, c.nombre as category_name 
+    FROM Producto p
+    LEFT JOIN Categoria c ON p.id_categoria = c.id_categoria
+    WHERE p.activo = TRUE
+  `;
+  const params = [];
+
+  if (search) {
+    query += ' AND (p.nombre LIKE ? OR p.sku LIKE ?)';
+    params.push(`%${search}%`, `%${search}%`);
+  }
+
+  if (category) {
+    query += ' AND p.id_categoria = ?';
+    params.push(category);
+  }
+
+  const [rows] = await pool.query(query, params);
   res.json({
     success: true,
     data: rows,
   });
 });
 
-/**
- * @desc    Obtener un producto por ID
- * @route   GET /api/products/:id
- * @access  Public
- */
 const getProductById = asyncHandler(async (req, res) => {
   const [rows] = await pool.query('SELECT * FROM Producto WHERE id_producto = ?', [req.params.id]);
   const product = rows[0];
@@ -34,11 +45,6 @@ const getProductById = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Crear un nuevo producto
- * @route   POST /api/products
- * @access  Private/Admin
- */
 const createProduct = asyncHandler(async (req, res) => {
   const { sku, nombre, precio, stock_actual, descripcion, id_categoria } = req.body;
   
@@ -69,20 +75,14 @@ const createProduct = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Actualizar stock de producto
- * @route   PUT /api/products/:id/stock
- * @access  Private/Admin
- */
 const updateProductStock = asyncHandler(async (req, res) => {
-  const { cantidad, tipo, motivo } = req.body; // tipo: ENTRADA o SALIDA
+  const { cantidad, tipo, motivo } = req.body;
   const id_producto = req.params.id;
 
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
 
-    // Obtener stock actual
     const [rows] = await connection.query('SELECT stock_actual FROM Producto WHERE id_producto = ?', [id_producto]);
     if (rows.length === 0) {
       throw new Error('Producto no encontrado');
@@ -102,10 +102,8 @@ const updateProductStock = asyncHandler(async (req, res) => {
       throw new Error('Tipo de movimiento inválido');
     }
 
-    // Actualizar producto
     await connection.query('UPDATE Producto SET stock_actual = ? WHERE id_producto = ?', [newStock, id_producto]);
 
-    // Registrar movimiento
     await connection.query(
       'INSERT INTO MovimientoStock (id_producto, cantidad, tipo, motivo) VALUES (?, ?, ?, ?)',
       [id_producto, cantidad, tipo, motivo]
@@ -126,14 +124,12 @@ const updateProductStock = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Actualizar un producto
- * @route   PUT /api/products/:id
- * @access  Private/Admin
- */
 const updateProduct = asyncHandler(async (req, res) => {
   const { sku, nombre, precio, descripcion, id_categoria, activo } = req.body;
   const id_producto = req.params.id;
+
+  const [oldRows] = await pool.query('SELECT imagen_url FROM Producto WHERE id_producto = ?', [id_producto]);
+  const oldImageUrl = oldRows.length > 0 ? oldRows[0].imagen_url : null;
 
   const imagen_url = req.file ? req.file.filename : (req.body.imagen_url || null);
 
@@ -160,6 +156,14 @@ const updateProduct = asyncHandler(async (req, res) => {
   const [result] = await pool.query(query, params);
 
   if (result.affectedRows > 0) {
+    // Si se subió una nueva imagen con éxito, borrar la anterior
+    if (req.file && oldImageUrl && oldImageUrl !== 'pure-inka-logo.png') {
+      const oldPath = path.join(__dirname, '../../public/uploads/products/', oldImageUrl);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
     res.json({
       success: true,
       message: 'Producto actualizado correctamente',
@@ -170,11 +174,6 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc    Eliminar un producto (Soft Delete)
- * @route   DELETE /api/products/:id
- * @access  Private/Admin
- */
 const deleteProduct = asyncHandler(async (req, res) => {
   const id_producto = req.params.id;
 
