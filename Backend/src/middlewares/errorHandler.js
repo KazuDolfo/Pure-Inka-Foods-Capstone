@@ -1,4 +1,8 @@
 const errorHandler = (err, req, res, next) => {
+    // Loguear el error para depuración en producción
+    console.error('Error:', err.message);
+    if (err.stack) console.error(err.stack);
+
     if (res.headersSent) {
       return next(err);
     }
