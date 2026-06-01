@@ -1,0 +1,28 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environments
+.env
+
+# Compiled output
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.bak
+
+# Coverage
+coverage/
+*.lcov
+
+# OS files
+.DS_Store
+Thumbs.db

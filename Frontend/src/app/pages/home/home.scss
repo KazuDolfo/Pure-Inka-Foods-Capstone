@@ -1,0 +1,36 @@
+@use '../../../styles/variables' as v;
+
+.hero-premium {
+    min-height: 80vh;
+    background-image: url('/assets/banner-palmeras.jpg');
+    background-size: cover;
+    background-position: center;
+    border-radius: 0 0 50px 50px;
+    overflow: hidden;
+    margin-top: -20px; 
+
+    .banner-overlay {
+        background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%);
+    }
+
+    h1 {
+        letter-spacing: -2px;
+    }
+
+    @media (max-width: 991px) {
+        min-height: 60vh;
+        text-align: center;
+        border-radius: 0;
+        
+        .d-flex { justify-content: center; }
+        .row { justify-content: center; }
+    }
+}
+
+.fw-800 { font-weight: 800; }
+.letter-spacing-1 { letter-spacing: 1px; }
+
+.btn-premium.btn-outline-light:hover {
+    background: white;
+    color: v.$inkapt-primary;
+}

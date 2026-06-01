@@ -1,0 +1,25 @@
+<div class="product-premium-card">
+  @if (product.stock_actual < 10) {
+    <span class="badge-new bg-danger text-white">Últimas Unidades</span>
+  } @else if (product.id % 2 === 0) {
+    <span class="badge-new">Destacado</span>
+  }
+
+  <div class="product-image-container">
+    <img [src]="getImageUrl()" [alt]="product.name" (error)="onImageError($event)">
+  </div>
+
+  <div class="product-content">
+    <span class="category-label">{{ product.category_name || 'Alimento Natural' }}</span>
+    <h3 class="product-title">{{ product.name }}</h3>
+    
+    <div class="price-tag">
+      {{ formattedPrice() }}
+    </div>
+
+    <button class="quick-add-btn" (click)="onAddToCart()" [class.bg-success]="isAdded">
+      <i class="bi" [class.bi-cart-plus]="!isAdded" [class.bi-check-lg]="isAdded"></i>
+      {{ isAdded ? '¡AÑADIDO!' : 'AGREGAR AL CARRITO' }}
+    </button>
+  </div>
+</div>

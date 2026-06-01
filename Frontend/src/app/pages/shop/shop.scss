@@ -1,0 +1,26 @@
+@use '../../../styles/variables' as v;
+
+.category-list {
+    .list-group-item {
+        font-size: 0.9rem;
+        padding: 10px 15px;
+        transition: all 0.2s ease;
+        color: v.$inkapt-dark-text;
+
+        &:hover {
+            background-color: v.$inkapt-gray-light;
+            color: v.$inkapt-primary;
+            padding-left: 20px;
+        }
+
+        &.active {
+            background-color: v.$inkapt-primary;
+            color: white;
+            font-weight: 600;
+        }
+    }
+}
+
+.shop-header h1 {
+    letter-spacing: -1px;
+}

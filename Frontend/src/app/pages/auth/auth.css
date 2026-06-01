@@ -1,0 +1,169 @@
+@use '../../../styles/variables' as v;
+
+.auth-wrapper {
+  background: v.$inkapt-body-bg;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.auth-container {
+  background-color: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1100px;
+  min-height: 650px;
+}
+
+
+.forms-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+  background-color: #ffffff;
+}
+
+.login-panel { left: 0; z-index: 10; opacity: 1; }
+.register-panel { left: 0; z-index: 5; opacity: 0; }
+
+.auth-container.register-mode .login-panel { transform: translateX(100%); opacity: 0; z-index: 5; }
+.auth-container.register-mode .register-panel { transform: translateX(100%); opacity: 1; z-index: 10; }
+
+.auth-logo { height: 60px; width: auto; margin-bottom: 20px; }
+
+
+.overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 100; 
+}
+
+.auth-container.register-mode .overlay-container {
+  transform: translateX(-100%);
+}
+
+.overlay {
+  background-image: linear-gradient(135deg, rgba(26, 92, 32, 0.92) 0%, rgba(10, 77, 22, 0.88) 100%), url('/assets/banner-palmeras.jpg');
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transition: transform 0.6s ease-in-out;
+}
+
+.auth-container.register-mode .overlay {
+  transform: translateX(50%);
+}
+
+.overlay-panel {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 50px;
+  text-align: center;
+  transition: transform 0.6s ease-in-out;
+}
+
+
+.overlay-left-panel {
+  left: 0;
+  transform: translateX(-20%);
+}
+
+
+.overlay-right-panel {
+  right: 0;
+  transform: translateX(0);
+}
+
+
+.auth-container.register-mode .overlay-left-panel { transform: translateX(0); }
+.auth-container.register-mode .overlay-right-panel { transform: translateX(20%); }
+
+
+.overlay-inner {
+    position: relative;
+    z-index: 110;
+}
+
+.overlay-panel h2 {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 2.5rem !important;
+  margin-bottom: 20px;
+  text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.overlay-panel p {
+  color: #ffffff !important;
+  font-size: 1.2rem !important;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+.btn-outline-light {
+  border: 3px solid #ffffff !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  letter-spacing: 1px;
+  padding: 15px 45px;
+  background: transparent !important;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  &:hover { background: #ffffff !important; color: v.$inkapt-primary !important; transform: scale(1.05); }
+}
+
+
+.auth-container.current-view-recovery {
+  .overlay-container { display: none !important; }
+  .login-panel { width: 100% !important; z-index: 500; left: 0 !important; transform: none !important; }
+  .register-panel { display: none !important; }
+}
+
+
+@media (max-width: 991px) {
+  .auth-container { display: block; height: auto; min-height: auto; border-radius: 20px; overflow: visible; background: transparent; box-shadow: none; }
+  .forms-container { position: relative; height: auto; }
+  .panel { position: relative; width: 100%; height: auto; padding: 2.5rem 1.5rem; border-radius: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); opacity: 1 !important; transform: none !important; }
+  .overlay-container { display: none !important; }
+  .register-mode .login-panel { display: none !important; }
+  .register-mode .register-panel { display: flex !important; }
+  
+  .panel .content h1, .panel .content p, .panel .content label { color: v.$inkapt-dark-text !important; }
+}
+
+.animate__animated { animation-duration: 0.5s; }
+.letter-spacing-lg { letter-spacing: 0.5rem; }

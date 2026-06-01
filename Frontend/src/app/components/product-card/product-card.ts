@@ -1,0 +1,93 @@
+
+import { Component, Input, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Product } from '../../../models';
+import { CartService } from '../../../services/cart.service';
+
+@Component({
+  selector: 'app-product-card',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './product-card.html',
+  styleUrl: './product-card.scss'
+})
+export class ProductCard {
+  @Input({ required: true }) product!: Product;
+
+  protected readonly formattedPrice = computed(() => {
+    const price = this.product.price;
+    if (typeof price !== 'number' || isNaN(price)) {
+      console.warn('Precio inválido detectado:', this.product);
+      return 'S/. 0.00';
+    }
+    return `S/. ${price.toFixed(2)}`;
+  });
+
+  isAdded = false; 
+
+  constructor(private cartService: CartService) {}
+
+  onAddToCart(): void {
+    this.cartService.addToCart(this.product);
+    this.isAdded = true;
+    setTimeout(() => {
+      this.isAdded = false;
+    }, 1500);
+  }
+
+  isProductInCart = computed(() => {
+    const cartItems = this.cartService.getCartItems();
+    return cartItems.some(item => item.id === this.product.id);
+  });
+
+  productQuantityInCart = computed(() => {
+    const cartItems = this.cartService.getCartItems();
+    const item = cartItems.find(cartItem => cartItem.id === this.product.id);
+    return item?.quantity || 0;
+  });
+
+  
+  getImageUrl(): string {
+    if (!this.product?.image) {
+      return 'assets/pure-inka-logo.png';
+    }
+
+    
+    if (this.product.image.startsWith('http')) {
+      return this.product.image;
+    }
+
+    
+    if (this.product.image.startsWith('/public/')) {
+      
+      const apiUrl = (window as any).env?.apiUrl || '/api';
+      const baseHost = apiUrl.startsWith('http') 
+        ? new URL(apiUrl).origin 
+        : window.location.origin;
+
+      
+      
+      
+      return this.product.image;
+    }
+
+    if (this.product.image.startsWith('assets/')) {
+      return this.product.image;
+    }
+
+    
+    if (!this.product.image.includes('/')) {
+      return `/public/uploads/products/${this.product.image}`;
+    }
+
+    
+    return `assets/${this.product.image}`;
+  }
+
+  
+  onImageError(event: any): void {
+    if (event?.target) {
+      event.target.src = 'assets/pure-inka-logo.png';
+    }
+  }
+}

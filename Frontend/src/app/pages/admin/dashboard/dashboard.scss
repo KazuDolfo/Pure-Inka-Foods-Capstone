@@ -1,0 +1,37 @@
+@use '../../../../styles/variables' as v;
+
+.dashboard-container {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.stat-card {
+    border: none;
+    border-radius: v.$border-radius-premium;
+    box-shadow: v.$box-shadow-premium;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: v.$box-shadow-hover;
+    }
+
+    .icon-box {
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+.card {
+    border-radius: v.$border-radius-premium;
+    border: none;
+    box-shadow: v.$box-shadow-premium;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+}

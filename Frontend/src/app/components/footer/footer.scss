@@ -1,0 +1,94 @@
+@use '../../../styles/variables' as v;
+
+.footer-modern {
+    background-color: v.$inkapt-primary;
+    color: white;
+    padding-top: 60px;
+    font-family: v.$font-family-body;
+}
+
+.footer-logo {
+    height: 60px;
+    width: auto;
+    background-color: white;
+    padding: 8px 15px;
+    border-radius: 12px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+.footer-heading {
+    font-family: v.$font-family-headers;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    position: relative;
+    padding-bottom: 10px;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 30px;
+        height: 2px;
+        background-color: v.$inkapt-accent;
+    }
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+        margin-bottom: 12px;
+        
+        a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+
+            &:hover {
+                color: v.$inkapt-accent;
+                padding-left: 5px;
+            }
+        }
+    }
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: v.$inkapt-accent;
+        color: v.$inkapt-primary;
+        transform: translateY(-3px);
+    }
+}
+
+.payment-methods img {
+    height: 35px;
+    margin-right: 15px;
+    border-radius: 5px;
+    background: white;
+    padding: 2px;
+}
+
+.footer-bottom {
+    background: rgba(0,0,0,0.1);
+}

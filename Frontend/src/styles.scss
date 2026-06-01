@@ -1,0 +1,80 @@
+
+
+@use 'styles/variables' as v;
+@use 'styles/typography' as t;
+@use 'styles/buttons' as b;
+@use 'styles/components' as c;
+
+:root {
+  --inkapt-primary: #{v.$inkapt-primary};
+  --inkapt-accent: #{v.$inkapt-accent};
+  --inkapt-body-bg: #{v.$inkapt-body-bg};
+  --inkapt-dark-text: #{v.$inkapt-dark-text};
+}
+
+body {
+    font-family: v.$font-family-body;
+    background-color: v.$inkapt-body-bg;
+    color: v.$inkapt-dark-text;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: v.$font-family-headers;
+    font-weight: 700;
+}
+
+
+.card-premium {
+    background: v.$inkapt-card-bg;
+    border-radius: v.$border-radius-premium;
+    border: none;
+    box-shadow: v.$box-shadow-premium;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: v.$box-shadow-hover;
+    }
+}
+
+.text-inkapt-primary { color: v.$inkapt-primary; }
+.bg-inkapt-primary { background-color: v.$inkapt-primary; }
+.text-inkapt-accent { color: v.$inkapt-accent; }
+.bg-inkapt-accent { background-color: v.$inkapt-accent; }
+
+.btn-premium {
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.section-padding {
+    padding: 80px 0;
+}
+
+.bg-white-card {
+    background-color: #ffffff;
+    border-radius: v.$border-radius-premium;
+}
+
+.img-premium {
+    border-radius: v.$border-radius-default;
+    object-fit: cover;
+}
+
+.transition-all {
+    transition: all 0.3s ease;
+}
+
+.letter-spacing-1 { letter-spacing: 1px; }
+
+@media (max-width: 768px) {
+    .section-padding {
+        padding: 50px 0;
+    }
+}

@@ -1,0 +1,133 @@
+<div 
+  class="top-bar py-2"
+  role="banner"
+  aria-label="Barra superior de navegación"
+>
+  <div class="container d-flex justify-content-between align-items-center">
+    
+    
+    <div class="top-bar-left d-none d-md-flex align-items-center gap-3">
+      <span class="promo-text fw-bold text-uppercase text-white">
+        <i class="bi bi-truck me-2"></i>FREE SHIPPING ON ORDERS OVER S/. 200
+      </span>
+    </div>
+
+    
+    <div class="top-bar-right d-none d-lg-flex align-items-center gap-1 gap-md-3">
+      
+      
+      <div class="d-none d-lg-flex align-items-center text-white-50 small me-2">
+        <span class="me-2">ES | PEN</span>
+        <i class="bi bi-chevron-down tiny-icon"></i>
+      </div>
+
+      
+      @if (!authService.isAuthenticated()) {
+        <a 
+          [routerLink]="['/auth']" 
+          class="auth-link d-flex align-items-center"
+          aria-label="Iniciar sesión o registrarse"
+        >
+          <i class="bi bi-person-circle me-1 me-md-2"></i>
+          <span class="d-none d-sm-inline fw-bold text-uppercase">Login / Register</span>
+        </a>
+      }
+      
+      
+      <div class="d-flex align-items-center gap-1" *ngIf="authService.isAuthenticated()">
+        <a 
+          [routerLink]="['/user-profile']" 
+          class="action-btn" 
+          title="Mi Cuenta"
+        >
+          <i class="bi bi-person-fill"></i>
+          <span class="d-none d-xl-inline ms-1 small fw-bold">MI PERFIL</span>
+        </a>
+
+        @if (authService.isAdmin()) {
+          <button 
+            (click)="logout()"
+            class="action-btn logout"
+            title="Cerrar sesión administrativa"
+          >
+            <i class="bi bi-box-arrow-right"></i>
+          </button>
+        }
+      </div>
+
+      <div class="divider d-none d-sm-block"></div>
+
+      
+      <div class="dropdown cart-wrapper" [class.show]="showCartDropdown()">
+        <button 
+          class="cart-btn position-relative" 
+          (click)="toggleCartDropdown()"
+          type="button"
+          aria-label="Carrito de compras"
+        >
+          <i class="bi bi-bag-fill"></i>
+          @if (cartItemCount() > 0) {
+            <span class="cart-count-badge">{{ cartItemCount() }}</span>
+          }
+          <span class="d-none d-md-inline ms-2 fw-bold">S/. {{ cartTotal().toFixed(2) }}</span>
+        </button>
+
+        
+        <div 
+          class="mini-cart-dropdown shadow-lg p-3" 
+          [class.show]="showCartDropdown()"
+          role="region"
+        >
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 fw-bold text-dark">TU CARRITO</h6>
+            <button class="btn-close small" (click)="closeCartDropdown()"></button>
+          </div>
+          
+          @if (cartItemCount() === 0) {
+            <div class="text-center py-4">
+              <i class="bi bi-cart-x fs-1 text-muted opacity-50"></i>
+              <p class="mt-2 text-muted small">Tu carrito está vacío</p>
+              <a [routerLink]="['/shop']" class="btn btn-sm btn-success mt-2" (click)="closeCartDropdown()">Ir a la Tienda</a>
+            </div>
+          }
+
+          @for (item of aggregatedCartItems(); track item.id) {
+            <div class="cart-item-row mb-3">
+              <img [src]="getImageUrl(item.image)" class="item-img" (error)="onImageError($event)"/>
+              <div class="item-info">
+                <span class="item-name">{{ item.name }}</span>
+                <span class="item-price">S/. {{ item.price.toFixed(2) }}</span>
+              </div>
+              <div class="item-qty-controls">
+                <button (click)="decreaseQuantity(item.id); $event.stopPropagation()"><i class="bi bi-dash"></i></button>
+                <span>{{ item.quantity }}</span>
+                <button (click)="increaseQuantity(item.id); $event.stopPropagation()"><i class="bi bi-plus"></i></button>
+              </div>
+              <button class="btn-remove" (click)="removeItem(item.id); $event.stopPropagation()">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          }
+
+          @if (cartItemCount() > 0) {
+            <div class="cart-footer mt-3 pt-3 border-top">
+              <div class="d-flex justify-content-between mb-3">
+                <span class="text-muted small">Subtotal:</span>
+                <span class="fw-bold">S/. {{ cartTotal().toFixed(2) }}</span>
+              </div>
+              <div class="d-grid gap-2">
+                <a [routerLink]="['/checkout']" class="btn btn-success fw-bold" (click)="closeCartDropdown()">FINALIZAR COMPRA</a>
+                <button class="btn btn-outline-secondary btn-sm" (click)="closeCartDropdown()">Continuar Comprando</button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+@if (showCartDropdown()) {
+  <div class="cart-overlay" (click)="closeCartDropdown()"></div>
+}

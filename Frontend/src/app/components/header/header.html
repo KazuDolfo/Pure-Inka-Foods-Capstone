@@ -1,0 +1,89 @@
+<nav class="main-header" [class.menu-open]="isMobileMenuOpen()">
+  <div class="container-fluid px-3 px-md-4">
+    <div class="header-inner">
+      
+      
+      <div class="header-mobile-left d-lg-none">
+        <button class="mobile-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen()">
+          <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </button>
+      </div>
+
+      
+      <div class="header-logo">
+        <a [routerLink]="[homeLink]" (click)="closeMobileMenu()">
+          <img src="assets/pure-inka-logo.png" alt="Pure Inka Foods" class="logo-img">
+        </a>
+      </div>
+
+      
+      <ul class="nav-links d-none d-lg-flex">
+        <li><a [routerLink]="[homeLink]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Inicio</a></li>
+        <li><a [routerLink]="['/shop']" routerLinkActive="active">Tienda</a></li>
+        <li><a [routerLink]="['/about']" routerLinkActive="active">Nosotros</a></li>
+        <li><a [routerLink]="['/contact']" routerLinkActive="active">Contacto</a></li>
+      </ul>
+
+      
+      <div class="header-actions">
+        
+        
+        <div class="d-flex d-lg-none align-items-center gap-2">
+          @if (authService.isAuthenticated()) {
+            <a [routerLink]="['/user-profile']" class="mobile-action-btn">
+              <i class="bi bi-person-fill"></i>
+            </a>
+          } @else {
+            <a [routerLink]="['/auth']" class="mobile-action-btn">
+              <i class="bi bi-person-circle"></i>
+            </a>
+          }
+
+          <a [routerLink]="['/checkout']" class="mobile-action-btn position-relative">
+            <i class="bi bi-bag-fill"></i>
+            @if (cartItemCount() > 0) {
+              <span class="mobile-cart-badge">{{ cartItemCount() }}</span>
+            }
+          </a>
+        </div>
+
+        
+        
+      </div>
+
+    </div>
+  </div>
+
+  
+  <div class="mobile-menu-overlay d-lg-none" [class.show]="isMobileMenuOpen()" (click)="closeMobileMenu()">
+    <div class="mobile-menu-content" (click)="$event.stopPropagation()">
+      <div class="mobile-menu-header">
+        <img src="assets/pure-inka-logo.png" alt="Logo" class="mobile-logo">
+        <button class="btn-close-menu" (click)="closeMobileMenu()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <ul class="mobile-nav-links">
+        <li><a [routerLink]="[homeLink]" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">Inicio</a></li>
+        <li><a [routerLink]="['/shop']" routerLinkActive="active" (click)="closeMobileMenu()">Tienda</a></li>
+        <li><a [routerLink]="['/about']" routerLinkActive="active" (click)="closeMobileMenu()">Nosotros</a></li>
+        <li><a [routerLink]="['/contact']" routerLinkActive="active" (click)="closeMobileMenu()">Contacto</a></li>
+        
+        @if (authService.isAuthenticated()) {
+          <li class="mt-4 pt-4 border-top">
+            <a [routerLink]="['/user-profile']" (click)="closeMobileMenu()">Mi Perfil</a>
+          </li>
+        } @else {
+          <li class="mt-4 pt-4 border-top">
+            <a [routerLink]="['/auth']" (click)="closeMobileMenu()">Iniciar Sesión</a>
+          </li>
+        }
+      </ul>
+      <div class="mobile-menu-footer">
+        <p class="small text-muted">Superalimentos Puros</p>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,51 @@
+<footer class="footer-modern">
+  <div class="container py-5">
+    <div class="row g-4 justify-content-between">
+      
+      <div class="col-lg-6 col-md-12">
+        <img src="assets/pure-inka-logo.png" alt="Pure Inka Foods" class="footer-logo mb-4">
+        <p class="text-white-50 mb-4 pe-lg-5">
+          Pure Inka Foods se dedica a llevar la pureza y el poder de los superalimentos andinos y amazónicos directamente a tu hogar, promoviendo un estilo de vida saludable y sostenible.
+        </p>
+        <div class="social-wrapper d-flex gap-3">
+          <a [href]="contactInfo.social.facebook" class="social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a [href]="contactInfo.social.instagram" class="social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a [href]="contactInfo.social.twitter" class="social-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+        </div>
+      </div>
+
+      
+      <div class="col-lg-4 col-md-12">
+        <h5 class="footer-heading">Tienda</h5>
+        <ul class="footer-links">
+          <li><a [routerLink]="['/shop']">Todos los Productos</a></li>
+          <li><a [routerLink]="['/shop']" [queryParams]="{category: 'Herbs'}">Hierbas y Polvos</a></li>
+          <li><a [routerLink]="['/shop']" [queryParams]="{category: 'Nuts'}">Nueces y Semillas</a></li>
+          <li><a [routerLink]="['/about']">Sobre Nosotros</a></li>
+          <li class="mt-4">
+            <div class="payment-methods">
+              <img src="assets/yape-logo.png" alt="Yape" title="Yape">
+              <img src="assets/plin-logo.png" alt="Plin" title="Plin">
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="footer-bottom border-top border-secondary border-opacity-25 py-4">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+          <span class="text-white-50 small">&copy; {{ currentYear }} Pure Inka Foods. Todos los derechos reservados.</span>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <ul class="footer-bottom-links list-inline mb-0">
+            <li class="list-inline-item"><a href="#" class="small text-white-50">Desarrollado con ❤️ por Inkapt Team</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,405 @@
+<div class="user-profile-container container my-5">
+  <div class="row">
+    
+    <div class="col-lg-3">
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body text-center py-4">
+          <div class="avatar-circle mx-auto mb-3">
+            {{ userData.nombre.charAt(0) | uppercase }}
+          </div>
+          <h5 class="fw-bold mb-0">{{ userData.nombre }}</h5>
+          <p class="text-muted small mb-0">{{ userData.email }}</p>
+          <span class="badge bg-success mt-2">{{ userData.rol | uppercase }}</span>
+        </div>
+        <div class="list-group list-group-flush">
+          <button (click)="setActiveTab('profile')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'profile'">
+            <i class="bi bi-person me-2"></i> Mi Perfil
+          </button>
+          
+          @if (!authService.isAdmin()) {
+            <button (click)="setActiveTab('orders')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'orders'">
+              <i class="bi bi-box-seam me-2"></i> Mis Pedidos
+            </button>
+            <button (click)="setActiveTab('addresses')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'addresses'">
+              <i class="bi bi-geo-alt me-2"></i> Direcciones
+            </button>
+            <button (click)="setActiveTab('messages')" class="list-group-item list-group-item-action border-0" [class.active]="activeTab === 'messages'">
+              <i class="bi bi-chat-dots me-2"></i> Chat Soporte
+            </button>
+          }
+          
+          <button (click)="logout()" class="list-group-item list-group-item-action border-0 text-danger">
+            <i class="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="col-lg-9">
+      <div class="card shadow-sm border-0 p-4 min-vh-50">
+        
+        @if (successMessage) {
+          <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ successMessage }}
+            <button type="button" class="btn-close" (click)="successMessage = null"></button>
+          </div>
+        }
+
+        @if (errorMessage) {
+          <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+            <button type="button" class="btn-close" (click)="errorMessage = null"></button>
+          </div>
+        }
+
+        
+        @if (activeTab === 'profile') {
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Información Personal</h3>
+            <div class="d-flex gap-2">
+              @if (!isEditingProfile && !isChangingPassword) {
+                <button class="btn btn-outline-success btn-sm" (click)="toggleEditProfile()">
+                  <i class="bi bi-pencil me-1"></i> Editar Perfil
+                </button>
+                <button class="btn btn-outline-primary btn-sm" (click)="toggleChangePassword()">
+                  <i class="bi bi-key me-1"></i> Cambiar Contraseña
+                </button>
+              }
+            </div>
+          </div>
+
+          @if (isEditingProfile) {
+            <form (ngSubmit)="updateProfile()" #profileForm="ngForm">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label text-muted small text-uppercase">Nombre Completo</label>
+                  <input type="text" class="form-control" name="nombre" [(ngModel)]="userData.nombre" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small text-uppercase">Correo Electrónico</label>
+                  <input type="email" class="form-control" name="email" [(ngModel)]="userData.email" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small text-uppercase">Teléfono</label>
+                  <input type="text" class="form-control" name="telefono" [(ngModel)]="userData.telefono">
+                </div>
+                <div class="col-12 mt-4 d-flex gap-2">
+                  <button type="submit" class="btn btn-success" [disabled]="!profileForm.valid">Guardar Cambios</button>
+                  <button type="button" class="btn btn-light border" (click)="toggleEditProfile()">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          } @else if (isChangingPassword) {
+            <form (ngSubmit)="updatePassword()" #passwordForm="ngForm">
+              <div class="row g-3">
+                <div class="col-md-12">
+                  <label class="form-label text-muted small text-uppercase">Contraseña Actual</label>
+                  <input type="password" class="form-control" name="currentPassword" [(ngModel)]="passwordData.currentPassword" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small text-uppercase">Nueva Contraseña</label>
+                  <input type="password" class="form-control" name="newPassword" [(ngModel)]="passwordData.newPassword" required minlength="6">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label text-muted small text-uppercase">Confirmar Nueva Contraseña</label>
+                  <input type="password" class="form-control" name="confirmPassword" [(ngModel)]="passwordData.confirmPassword" required>
+                </div>
+                <div class="col-12 mt-4 d-flex gap-2">
+                  <button type="submit" class="btn btn-primary" [disabled]="!passwordForm.valid">Actualizar Contraseña</button>
+                  <button type="button" class="btn btn-light border" (click)="toggleChangePassword()">Cancelar</button>
+                </div>
+              </div>
+            </form>
+          } @else {
+            <div class="row g-3 animate__animated animate__fadeIn">
+              <div class="col-md-6">
+                <label class="form-label text-muted small text-uppercase">Nombre Completo</label>
+                <p class="fw-bold border-bottom pb-2">{{ userData.nombre }}</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small text-uppercase">Correo Electrónico</label>
+                <p class="fw-bold border-bottom pb-2">{{ userData.email }}</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small text-uppercase">Teléfono</label>
+                <p class="fw-bold border-bottom pb-2">{{ userData.telefono || 'No registrado' }}</p>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-muted small text-uppercase">Rol de Usuario</label>
+                <p class="fw-bold border-bottom pb-2 text-capitalize">{{ userData.rol }}</p>
+              </div>
+            </div>
+          }
+        }
+
+        
+        @if (activeTab === 'orders') {
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Historial de Pedidos</h3>
+            @if (selectedOrder()) {
+              <button class="btn btn-outline-dark btn-sm" (click)="closeOrderDetails()">
+                <i class="bi bi-arrow-left me-1"></i> Volver al Listado
+              </button>
+            }
+          </div>
+
+          @if (userOrders.length === 0) {
+            <div class="text-center py-5">
+              <i class="bi bi-bag-x fs-1 text-muted"></i>
+              <p class="mt-3">Aún no has realizado ningún pedido.</p>
+              <a routerLink="/shop" class="btn btn-success">Ir a la Tienda</a>
+            </div>
+          } @else {
+            @if (!selectedOrder()) {
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Orden #</th>
+                      <th>Fecha</th>
+                      <th>Total</th>
+                      <th>Pago</th>
+                      <th>Envío</th>
+                      <th class="text-end">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (order of userOrders; track order.id_pedido) {
+                      <tr>
+                        <td>#{{ order.id_pedido }}</td>
+                        <td>{{ order.fecha | date:'dd/MM/yyyy' }}</td>
+                        <td class="fw-bold text-success">S/. {{ order.total | number:'1.2-2' }}</td>
+                        <td>
+                          <span class="badge rounded-pill" [ngClass]="getStatusBadgeClass(order.estado_pago)">
+                            {{ order.estado_pago | uppercase }}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="badge rounded-pill" [ngClass]="getStatusBadgeClass(order.estado_envio)">
+                            {{ order.estado_envio | uppercase }}
+                          </span>
+                        </td>
+                        <td class="text-end">
+                          @if (order.estado_pago === 'PAGADO') {
+                            <button class="btn btn-sm btn-outline-danger me-2" (click)="downloadReceipt(order.id_pedido)" title="Descargar Comprobante">
+                              <i class="bi bi-file-pdf"></i>
+                            </button>
+                          }
+                          <button class="btn btn-sm btn-primary rounded-circle" (click)="viewOrderDetails(order.id_pedido)">
+                            <i class="bi bi-eye"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              
+              <div class="order-detail-view animate__animated animate__fadeIn">
+                <div class="row">
+                  <div class="col-md-7">
+                    <label class="text-muted small text-uppercase fw-bold d-block mb-3">Productos en el Pedido</label>
+                    <div class="list-group list-group-flush border rounded-4 overflow-hidden shadow-sm">
+                      @for (item of selectedOrder().items; track item.id_producto) {
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                          <div class="d-flex align-items-center">
+                            <div class="bg-success bg-opacity-10 text-success rounded p-2 me-3 fw-bold">
+                              {{ item.cantidad }}x
+                            </div>
+                            <div>
+                              <div class="fw-bold small">{{ item.producto_nombre }}</div>
+                              <div class="text-muted extra-small">Precio Unitario: S/. {{ item.precio_fijo | number:'1.2-2' }}</div>
+                            </div>
+                          </div>
+                          <span class="fw-bold small">S/. {{ (item.precio_fijo * item.cantidad) | number:'1.2-2' }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="col-md-5">
+                    <div class="bg-light p-4 rounded-4 shadow-sm border h-100">
+                      <div class="mb-3">
+                        <label class="text-muted small text-uppercase fw-bold d-block mb-1">Estado del Envío</label>
+                        <span class="badge h6 mb-0" [ngClass]="getStatusBadgeClass(selectedOrder().estado_envio)">
+                          {{ selectedOrder().estado_envio | uppercase }}
+                        </span>
+                      </div>
+                      <div class="mb-3">
+                        <label class="text-muted small text-uppercase fw-bold d-block mb-1">Estado del Pago</label>
+                        <span class="badge bg-light text-dark border h6 mb-0">
+                          {{ selectedOrder().estado_pago | uppercase }}
+                        </span>
+                      </div>
+                      <hr>
+                      
+                      @if (selectedOrder().comprobante_url) {
+                        <div class="mb-4">
+                          <label class="text-muted extra-small text-uppercase fw-bold d-block mb-2">Mi Comprobante de Pago Subido</label>
+                          <div class="text-center bg-white p-2 rounded-3 border">
+                            <a [href]="selectedOrder().comprobante_url" target="_blank" title="Ver imagen completa">
+                              <img [src]="selectedOrder().comprobante_url" class="img-fluid rounded border shadow-sm" style="max-height: 200px;">
+                            </a>
+                          </div>
+                        </div>
+                      }
+                      <div class="d-flex justify-content-between fw-bold h4 mb-0 text-success mt-4">
+                        <span>Total:</span>
+                        <span>S/. {{ selectedOrder().total | number:'1.2-2' }}</span>
+                      </div>
+                      @if (selectedOrder().estado_pago === 'PAGADO') {
+                        <button class="btn w-100 mt-4 fw-bold" 
+                                [class.btn-outline-danger]="!selectedOrder().comprobante_pdf_url"
+                                [class.btn-danger]="selectedOrder().comprobante_pdf_url"
+                                (click)="downloadReceipt(selectedOrder().id_pedido)">
+                          <i class="bi bi-file-pdf me-2"></i> 
+                          {{ selectedOrder().comprobante_pdf_url ? 'VER COMPROBANTE PDF' : 'GENERAR COMPROBANTE' }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          }
+        }
+
+        
+        @if (activeTab === 'messages') {
+          <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <h3 class="fw-bold mb-0">Chat con Soporte</h3>
+            <button class="btn btn-sm btn-light border" (click)="loadMessages()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+
+          <div class="chat-container bg-light rounded-4 overflow-hidden border d-flex flex-column" style="height: 500px;">
+            <div class="chat-messages p-4 d-flex flex-column bg-white overflow-auto" #scrollContainer style="flex: 1;">
+              @if (isMessagesLoading() && messages().length === 0) {
+                <div class="text-center my-auto py-5">
+                  <div class="spinner-border text-success" role="status"></div>
+                </div>
+              } @else if (messages().length === 0) {
+                <div class="text-center my-auto py-5 text-muted">
+                  <i class="bi bi-chat-left-dots fs-1 d-block mb-3 opacity-25"></i>
+                  <p>Inicia una conversación con nuestro equipo de soporte.</p>
+                </div>
+              } @else {
+                @for (msg of messages(); track msg.id_mensaje) {
+                  <div class="d-flex mb-3" [ngClass]="msg.id_emisor == authService.getCurrentUser()?.id_usuario ? 'justify-content-end' : 'justify-content-start'">
+                    <div class="message-bubble p-3 rounded-4 shadow-sm" 
+                         [ngClass]="msg.id_emisor == authService.getCurrentUser()?.id_usuario ? 'bg-success text-white' : 'bg-light text-dark'"
+                         style="max-width: 80%;">
+                      @if (msg.id_emisor != authService.getCurrentUser()?.id_usuario) {
+                        <div class="sender-name small fw-bold mb-1" style="font-size: 0.7rem; opacity: 0.8;">
+                          {{ msg.emisor_nombre || 'Soporte' }}
+                        </div>
+                      }
+                      <p class="mb-1">{{ msg.contenido }}</p>
+                      <small class="opacity-75 d-block text-end" style="font-size: 0.7rem;">
+                        {{ (msg.fecha_envio || msg.fecha) | date:'shortTime' }}
+                      </small>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+
+            
+            <div class="chat-input p-3 bg-light border-top flex-shrink-0">
+              <form (ngSubmit)="sendMessage()" class="d-flex gap-2">
+                <input type="text" name="messageText" class="form-control rounded-pill border-0 shadow-sm" 
+                       placeholder="Escribe tu mensaje aquí..." 
+                       [(ngModel)]="newMessage" autocomplete="off">
+                <button type="submit" class="btn btn-success rounded-circle shadow-sm flex-shrink-0" style="width: 45px; height: 45px;" [disabled]="!newMessage().trim()">
+                  <i class="bi bi-send-fill"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        }
+
+        
+        @if (activeTab === 'addresses') {
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold mb-0">Mis Direcciones</h3>
+            <button class="btn btn-success btn-sm" (click)="openAddressModal()">
+              <i class="bi bi-plus-lg me-1"></i> Nueva Dirección
+            </button>
+          </div>
+
+          @if (direcciones.length === 0) {
+            <div class="text-center py-5">
+              <i class="bi bi-geo fs-1 text-muted"></i>
+              <p class="mt-3">No tienes direcciones registradas.</p>
+            </div>
+          } @else {
+            <div class="row g-3">
+              @for (dir of direcciones; track dir.id_direccion) {
+                <div class="col-md-6">
+                  <div class="card h-100 border-success border-opacity-25">
+                    <div class="card-body">
+                      <h6 class="fw-bold mb-1">{{ dir.nombre_direccion }}</h6>
+                      <p class="small mb-2 text-muted">{{ dir.direccion_exacta }}</p>
+                      <p class="small mb-0">{{ dir.ciudad }}, {{ dir.estado_region }}</p>
+                      <p class="small fw-bold">{{ dir.pais_nombre }}</p>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+@if (showAddressModal) {
+  <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5)">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title fw-bold">Agregar Nueva Dirección</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="closeAddressModal()"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form #addressFormRef="ngForm" (ngSubmit)="saveAddress()">
+            <div class="mb-3">
+              <label class="form-label">Etiqueta (Ej: Hogar, Oficina)</label>
+              <input type="text" name="label" class="form-control" [(ngModel)]="newAddress.nombre_direccion" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">País</label>
+              <select name="pais" class="form-select" [(ngModel)]="newAddress.id_pais" required>
+                @for (p of paises; track p.id_pais) {
+                  <option [value]="p.id_pais">{{ p.nombre }}</option>
+                }
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Dirección Exacta</label>
+              <input type="text" name="addr" class="form-control" [(ngModel)]="newAddress.direccion_exacta" required>
+            </div>
+            <div class="row">
+              <div class="col-6 mb-3">
+                <label class="form-label">Estado/Región</label>
+                <input type="text" name="reg" class="form-control" [(ngModel)]="newAddress.estado_region" required>
+              </div>
+              <div class="col-6 mb-3">
+                <label class="form-label">Ciudad</label>
+                <input type="text" name="city" class="form-control" [(ngModel)]="newAddress.ciudad" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-success w-100 fw-bold mt-2" [disabled]="!addressFormRef.valid">
+              GUARDAR DIRECCIÓN
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+}

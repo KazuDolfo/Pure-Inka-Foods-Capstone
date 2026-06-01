@@ -1,0 +1,191 @@
+<div class="container-fluid py-4">
+    <div class="row">
+      
+      <div [class]="selectedOrder() ? 'col-lg-7' : 'col-12'">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+            <h5 class="fw-bold m-0 text-inkapt-dark">Historial de Pedidos</h5>
+            <button class="btn btn-sm btn-light border" (click)="loadOrders()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+          
+          <div class="card-body p-0">
+            <div *ngIf="isLoading()" class="text-center py-5">
+              <div class="spinner-border text-success" role="status"></div>
+            </div>
+  
+            <div class="table-responsive" *ngIf="!isLoading()">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light small text-uppercase fw-bold text-muted">
+                  <tr>
+                    <th class="ps-3 ps-md-4">Pedido</th>
+                    <th class="d-none d-sm-table-cell">Cliente</th>
+                    <th>Total</th>
+                    <th class="d-none d-md-table-cell">Pago</th>
+                    <th class="d-none d-lg-table-cell">Envío</th>
+                    <th class="text-end pe-3 pe-md-4">Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let order of orders()" 
+                      [class.table-active]="selectedOrder()?.id_pedido === order.id_pedido"
+                      class="cursor-pointer"
+                      (click)="viewDetails(order.id_pedido)">
+                    <td class="ps-3 ps-md-4">
+                      <span class="fw-bold">#{{ order.id_pedido }}</span>
+                      <div class="small text-muted d-sm-none">{{ order.nombre || 'Cliente' }}</div>
+                      <div class="small text-muted">{{ order.fecha | date:'shortDate' }}</div>
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                      <div class="fw-bold text-truncate" style="max-width: 120px;">{{ order.nombre || 'Cliente' }}</div>
+                    </td>
+                    <td class="fw-bold text-success">S/.{{ order.total | number:'1.2-2' }}</td>
+                    <td class="d-none d-md-table-cell">
+                      <span class="badge rounded-pill" [ngClass]="getStatusBadgeClass(order.estado_pago)">
+                        {{ order.estado_pago }}
+                      </span>
+                    </td>
+                    <td class="d-none d-lg-table-cell">
+                      <span class="badge rounded-pill" [ngClass]="getStatusBadgeClass(order.estado_envio)">
+                        {{ order.estado_envio }}
+                      </span>
+                    </td>
+                    <td class="text-end pe-3 pe-md-4">
+                      <div class="d-flex justify-content-end gap-1">
+                        @if (order.estado_pago === 'PAGADO') {
+                          <button class="btn btn-sm btn-outline-danger d-none d-sm-inline-block" (click)="downloadReceipt(order.id_pedido); $event.stopPropagation()" title="Descargar PDF">
+                            <i class="bi bi-file-pdf"></i>
+                          </button>
+                        }
+                        <button class="btn btn-sm btn-primary rounded-circle">
+                          <i class="bi bi-chevron-right"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      
+      <div class="col-lg-5" *ngIf="selectedOrder()">
+        <div class="card border-0 shadow-lg rounded-4 detail-card sticky-top" style="top: 20px;">
+          <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold">Detalle del Pedido #{{ selectedOrder().id_pedido }}</h6>
+            <button class="btn-close btn-close-white" (click)="closeDetails()"></button>
+          </div>
+          
+          <div class="card-body p-4" *ngIf="!isDetailLoading()">
+            <div class="mb-4">
+              <label class="text-muted small text-uppercase fw-bold d-block mb-2">Información del Cliente</label>
+              <div class="bg-light p-3 rounded-3">
+                <p class="mb-1 fw-bold"><i class="bi bi-person me-2"></i>{{ selectedOrder().nombre }}</p>
+                <p class="mb-0 small text-muted"><i class="bi bi-envelope me-2"></i>{{ selectedOrder().email }}</p>
+              </div>
+            </div>
+  
+            <div class="mb-4">
+              <label class="text-muted small text-uppercase fw-bold d-block mb-2">Productos</label>
+              <div class="list-group list-group-flush border rounded-3 overflow-hidden">
+                <div *ngFor="let item of selectedOrder().items" class="list-group-item d-flex justify-content-between align-items-center py-3">
+                  <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 text-success rounded p-2 me-3 fw-bold">
+                      {{ item.cantidad }}x
+                    </div>
+                    <div>
+                      <div class="fw-bold small">{{ item.producto_nombre }}</div>
+                      <div class="text-muted extra-small">SKU: {{ item.sku }}</div>
+                    </div>
+                  </div>
+                  <span class="fw-bold small">S/. {{ (item.precio_fijo * item.cantidad) | number:'1.2-2' }}</span>
+                </div>
+              </div>
+            </div>
+  
+            <div class="bg-light p-3 rounded-3 mb-4">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">ID Transacción:</span>
+                <code class="small">{{ selectedOrder().transaccion_id || 'N/A' }}</code>
+              </div>
+              <div class="d-flex justify-content-between fw-bold h5 mb-0 text-success">
+                <span>Total Pedido:</span>
+                <span>S/. {{ selectedOrder().total | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            @if (selectedOrder().estado_pago === 'PAGADO') {
+              <button class="btn w-100 mb-4 fw-bold shadow-sm" 
+                      [class.btn-outline-danger]="!selectedOrder().comprobante_pdf_url"
+                      [class.btn-danger]="selectedOrder().comprobante_pdf_url"
+                      (click)="downloadReceipt(selectedOrder().id_pedido)">
+                <i class="bi bi-file-pdf me-2"></i> 
+                {{ selectedOrder().comprobante_pdf_url ? 'VER COMPROBANTE PDF' : 'GENERAR COMPROBANTE' }}
+              </button>
+            }
+
+            
+            @if (selectedOrder().comprobante_url) {
+              <div class="mb-4">
+                <label class="text-muted small text-uppercase fw-bold d-block mb-2">Comprobante de Pago</label>
+                <div class="text-center bg-light p-2 rounded-3 border">
+                  <a [href]="selectedOrder().comprobante_url" target="_blank" title="Ver imagen completa">
+                    <img [src]="selectedOrder().comprobante_url" class="img-fluid rounded border shadow-sm" style="max-height: 250px;">
+                  </a>
+                  <p class="extra-small text-muted mt-2 mb-0"><i class="bi bi-zoom-in me-1"></i> Haz clic para ampliar</p>
+                </div>
+              </div>
+            }
+
+            
+            <div class="border-top pt-4">
+              <label class="text-muted small text-uppercase fw-bold d-block mb-3">Gestión de Estados</label>
+              
+              <div class="mb-4">
+                <span class="small d-block mb-2 text-muted">Estado del Pago:</span>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm flex-grow-1" 
+                          [class.btn-success]="selectedOrder().estado_pago === 'PAGADO'" 
+                          [class.btn-outline-success]="selectedOrder().estado_pago !== 'PAGADO'" 
+                          (click)="updateStatus(selectedOrder().id_pedido, 'PAGADO', selectedOrder().estado_envio)"
+                          [disabled]="isUpdating()">
+                    <i class="bi bi-check-circle me-1"></i> PAGAR
+                  </button>
+                  <button class="btn btn-sm flex-grow-1" 
+                          [class.btn-danger]="selectedOrder().estado_pago === 'RECHAZADO'" 
+                          [class.btn-outline-danger]="selectedOrder().estado_pago !== 'RECHAZADO'" 
+                          (click)="updateStatus(selectedOrder().id_pedido, 'RECHAZADO', selectedOrder().estado_envio)"
+                          [disabled]="isUpdating()">
+                    <i class="bi bi-x-circle me-1"></i> RECHAZAR
+                  </button>
+                </div>
+              </div>
+
+              <div class="mb-2">
+                <span class="small d-block mb-2 text-muted">Estado del Envío:</span>
+                <div class="input-group input-group-sm">
+                  <select class="form-select" #shipStatus [value]="selectedOrder().estado_envio">
+                    <option value="PROCESANDO">PROCESANDO</option>
+                    <option value="ENVIADO">ENVIADO</option>
+                    <option value="ADUANAS">ADUANAS</option>
+                    <option value="ENTREGADO">ENTREGADO</option>
+                  </select>
+                  <button class="btn btn-primary fw-bold" (click)="updateStatus(selectedOrder().id_pedido, selectedOrder().estado_pago, shipStatus.value)" [disabled]="isUpdating()">
+                    ACTUALIZAR
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          <div *ngIf="isDetailLoading()" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Cargando detalles...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,10 @@
+@if (showClientNav) {
+  <app-top-bar></app-top-bar>
+  <app-header></app-header>
+}
+
+<router-outlet></router-outlet>
+
+@if (showClientNav) {
+  <app-footer></app-footer>
+}

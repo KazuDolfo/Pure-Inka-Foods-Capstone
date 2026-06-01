@@ -1,0 +1,228 @@
+<div class="auth-wrapper">
+  <div class="auth-container" 
+       [class.register-mode]="currentView() === 'register'"
+       [class.current-view-recovery]="currentView() === 'recovery'">
+    
+    
+    <div class="forms-container">
+      
+      
+      <div class="panel login-panel" [class.hidden]="currentView() === 'register'">
+        <div class="content">
+          <div class="text-center mb-4">
+            <img src="assets/pure-inka-logo.png" alt="Pure Inka" class="auth-logo">
+          </div>
+
+          
+          <div *ngIf="currentView() === 'login'" class="animate__animated animate__fadeIn">
+            <header class="text-center mb-4">
+              <h1 class="h3 fw-bold text-inkapt-dark">Bienvenido de Vuelta</h1>
+              <p class="text-muted small">Inicia sesión para continuar</p>
+            </header>
+
+            <div *ngIf="authMessage" class="alert text-center fw-bold mb-4"
+                 [class.alert-success]="messageType === 'success'"
+                 [class.alert-danger]="messageType === 'error'">
+              {{ authMessage }}
+            </div>
+
+            <form (ngSubmit)="signIn()" #loginForm="ngForm">
+              <div class="mb-3">
+                <label class="form-label small fw-bold">Correo Electrónico</label>
+                <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                  <span class="input-group-text border-0 bg-white"><i class="bi bi-envelope text-success"></i></span>
+                  <input type="email" name="loginEmail" class="form-control border-0"
+                         [(ngModel)]="loginData.email" required placeholder="tu@email.com">
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <label class="form-label small fw-bold">Contraseña</label>
+                <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                  <span class="input-group-text border-0 bg-white"><i class="bi bi-lock text-success"></i></span>
+                  <input type="password" name="loginPassword" class="form-control border-0"
+                         [(ngModel)]="loginData.password" required placeholder="••••••••">
+                </div>
+                <div class="text-end mt-2">
+                  <button type="button" class="btn btn-link p-0 text-decoration-none small text-muted" (click)="switchView('recovery')">
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
+              </div>
+              
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm rounded-pill" [disabled]="!loginForm.valid || isSubmitting">
+                  <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                  {{ isSubmitting ? 'Verificando...' : 'ACCEDER' }}
+                </button>
+                <button type="button" class="btn btn-link text-decoration-none small text-muted mt-2" (click)="openAdminModal()">
+                  Acceso Administrativo
+                </button>
+              </div>
+            </form>
+
+            <div class="mobile-toggle text-center mt-4 d-lg-none">
+              <p class="mb-0">¿No tienes una cuenta?</p>
+              <button class="btn btn-link fw-bold text-success text-decoration-none" (click)="switchView('register')">Regístrate aquí</button>
+            </div>
+          </div>
+
+          
+          <div *ngIf="currentView() === 'recovery'" class="animate__animated animate__fadeIn">
+              <header class="text-center mb-4">
+                  <h2 class="h4 fw-bold text-inkapt-dark">Recuperar Acceso</h2>
+                  <p class="text-muted small">Ingresa tus datos para recibir el código</p>
+              </header>
+
+              <div *ngIf="authMessage" class="alert text-center fw-bold mb-4"
+                   [class.alert-success]="messageType === 'success'"
+                   [class.alert-danger]="messageType === 'error'">
+                  {{ authMessage }}
+              </div>
+
+              <form *ngIf="recoveryStep() === 1" (ngSubmit)="sendRecoveryCode()">
+                  <div class="mb-4">
+                      <label class="form-label small fw-bold">Correo o Teléfono</label>
+                      <input type="text" name="recIdentifier" class="form-control rounded-3" [(ngModel)]="recoveryData.identifier" required>
+                  </div>
+                  <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill" [disabled]="isSubmitting">ENVIAR CÓDIGO</button>
+              </form>
+
+              <form *ngIf="recoveryStep() === 2" (ngSubmit)="verifyCode()">
+                  <div class="mb-4 text-center">
+                      <label class="form-label fw-bold">Código de 6 dígitos</label>
+                      <input type="text" name="recCode" class="form-control text-center fs-3 fw-bold letter-spacing-lg" [(ngModel)]="recoveryData.code" required maxlength="6">
+                  </div>
+                  <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill" [disabled]="isSubmitting">VERIFICAR</button>
+              </form>
+
+              <form *ngIf="recoveryStep() === 3" (ngSubmit)="resetPassword()">
+                  <div class="mb-3">
+                      <label class="form-label small fw-bold">Nueva Contraseña</label>
+                      <input type="password" name="recNewPass" class="form-control rounded-3" [(ngModel)]="recoveryData.newPassword" required minlength="6">
+                  </div>
+                  <div class="mb-4">
+                      <label class="form-label small fw-bold">Confirmar</label>
+                      <input type="password" name="recConfirmPass" class="form-control rounded-3" [(ngModel)]="recoveryData.confirmPassword" required>
+                  </div>
+                  <button type="submit" class="btn btn-success w-100 fw-bold rounded-pill" [disabled]="isSubmitting">RESTABLECER</button>
+              </form>
+
+              <button class="btn btn-link w-100 text-muted mt-3 text-decoration-none small" (click)="switchView('login')">
+                  <i class="bi bi-arrow-left me-1"></i> Volver al Inicio
+              </button>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="panel register-panel" [class.hidden]="currentView() !== 'register'">
+        <div class="content">
+          <div class="text-center mb-4">
+            <img src="assets/pure-inka-logo.png" alt="Pure Inka" class="auth-logo">
+          </div>
+
+          <header class="text-center mb-4">
+            <h1 class="h3 fw-bold text-inkapt-dark">Únete a Nosotros</h1>
+            <p class="text-muted small">Crea una cuenta y vive la experiencia natural</p>
+          </header>
+
+          <div *ngIf="authMessage && currentView() === 'register'" class="alert text-center fw-bold mb-4"
+               [class.alert-success]="messageType === 'success'"
+               [class.alert-danger]="messageType === 'error'">
+            {{ authMessage }}
+          </div>
+
+          <form (ngSubmit)="signUp()" #registerForm="ngForm">
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Nombre Completo</label>
+              <input type="text" name="registerName" class="form-control shadow-sm" [(ngModel)]="registerData.name" required placeholder="Juan Pérez">
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Correo Electrónico</label>
+              <input type="email" name="registerEmail" class="form-control shadow-sm" [(ngModel)]="registerData.email" required placeholder="tu@email.com">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label small fw-bold">Contraseña</label>
+              <input type="password" name="registerPassword" class="form-control shadow-sm" [(ngModel)]="registerData.password" required minlength="6" placeholder="••••••••">
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label small fw-bold">Confirmar</label>
+              <input type="password" name="confirmPassword" class="form-control shadow-sm" [(ngModel)]="registerData.confirmPassword" required placeholder="••••••••">
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-success btn-lg fw-bold shadow-sm rounded-pill" [disabled]="!registerForm.valid || isSubmitting">
+                CREAR CUENTA
+              </button>
+            </div>
+          </form>
+
+          <div class="mobile-toggle text-center mt-4 d-lg-none">
+            <p class="mb-0">¿Ya tienes cuenta?</p>
+            <button class="btn btn-link fw-bold text-success text-decoration-none" (click)="switchView('login')">Inicia sesión aquí</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    
+    <div class="overlay-container d-none d-lg-block">
+      <div class="overlay">
+        
+        
+        <div class="overlay-panel overlay-left-panel">
+          <div class="overlay-inner">
+            <h2 class="fw-bold">¿Ya eres parte de Pure Inka?</h2>
+            <p>Descubre tus superalimentos favoritos y gestiona tus pedidos fácilmente.</p>
+            <button class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold" (click)="switchView('login')">INICIAR SESIÓN</button>
+          </div>
+        </div>
+
+        
+        <div class="overlay-panel overlay-right-panel">
+          <div class="overlay-inner">
+            <h2 class="fw-bold">¡Hola! ¿Eres nuevo?</h2>
+            <p>Regístrate y comienza tu camino hacia una vida más saludable con nosotros.</p>
+            <button class="btn btn-outline-light btn-lg rounded-pill px-5 fw-bold" (click)="switchView('register')">REGISTRARSE</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="modal fade" id="adminModal" [class.show]="showAdminModal()" 
+     [style.display]="showAdminModal() ? 'block' : 'none'" (click)="closeAdminModal()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+        <div class="modal-content border-0 shadow-lg overflow-hidden" style="border-radius: 20px;">
+            <div class="modal-header bg-dark text-white border-0 py-3">
+                <h5 class="modal-title fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Acceso Seguro Admin</h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeAdminModal()"></button>
+            </div>
+            <div class="modal-body p-4 bg-light">
+                <form (ngSubmit)="signInAdmin()" #adminLoginForm="ngForm">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Usuario Administrativo</label>
+                        <input type="email" name="adminEmail" class="form-control border-0 shadow-sm" [(ngModel)]="adminLoginData.email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Clave de Seguridad</label>
+                        <input type="password" name="adminPassword" class="form-control border-0 shadow-sm" [(ngModel)]="adminLoginData.password" required>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100 btn-lg fw-bold rounded-pill shadow" [disabled]="!adminLoginForm.valid || isSubmittingAdmin">
+                        ENTRAR AL PANEL
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showAdminModal()" *ngIf="showAdminModal()"></div>
