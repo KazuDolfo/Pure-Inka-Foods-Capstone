@@ -1,5 +1,4 @@
-const fs = require('fs');
-const path = require('path');
+const { cloudinary } = require('../config/cloudinary');
 const productRepository = require('../repositories/productRepository');
 const pool = require('../config/db');
 const asyncHandler = require('express-async-handler');
@@ -54,7 +53,7 @@ const getProductById = asyncHandler(async (req, res) => {
 const createProduct = asyncHandler(async (req, res) => {
   const { sku, nombre, precio, stock_actual, descripcion, id_categoria } = req.body;
   
-  const imagen_url = req.file ? req.file.filename : (req.body.imagen_url || 'pure-inka-logo.png');
+  const imagen_url = req.file ? req.file.path : (req.body.imagen_url || 'pure-inka-logo.png');
   const categoriaId = id_categoria && id_categoria !== '' ? id_categoria : null;
 
   const result = await productRepository.create({
@@ -143,7 +142,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   const oldProduct = await productRepository.findById(id_producto);
   const oldImageUrl = oldProduct ? oldProduct.imagen_url : null;
 
-  const imagen_url = req.file ? req.file.filename : (req.body.imagen_url || undefined);
+  const imagen_url = req.file ? req.file.path : (req.body.imagen_url || undefined);
 
   const productData = {
     sku,
@@ -158,11 +157,10 @@ const updateProduct = asyncHandler(async (req, res) => {
   const result = await productRepository.update(id_producto, productData);
 
   if (result && result.affectedRows > 0) {
-    if (req.file && oldImageUrl && oldImageUrl !== 'pure-inka-logo.png') {
-      const oldPath = path.join(__dirname, '../../public/uploads/products/', oldImageUrl);
-      if (fs.existsSync(oldPath)) {
-        fs.unlinkSync(oldPath);
-      }
+    if (req.file && oldImageUrl && oldImageUrl.includes('cloudinary')) {
+      const publicId = oldImageUrl.split('/').pop().split('.')[0];
+      const folder = 'pure-inka/products/';
+      await cloudinary.uploader.destroy(folder + publicId);
     }
 
     res.json({
@@ -177,6 +175,14 @@ const updateProduct = asyncHandler(async (req, res) => {
 
 const deleteProduct = asyncHandler(async (req, res) => {
   const id_producto = req.params.id;
+  
+  const product = await productRepository.findById(id_producto);
+  if (product && product.imagen_url && product.imagen_url.includes('cloudinary')) {
+    const publicId = product.imagen_url.split('/').pop().split('.')[0];
+    const folder = 'pure-inka/products/';
+    await cloudinary.uploader.destroy(folder + publicId);
+  }
+
   const result = await productRepository.delete(id_producto);
 
   if (result.affectedRows > 0) {

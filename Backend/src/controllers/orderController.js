@@ -33,7 +33,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
     throw new Error('No hay productos en el pedido');
   }
   const id_usuario = req.user.id_usuario;
-  const comprobante_url = req.file ? `/public/uploads/vouchers/${req.file.filename}` : null;
+  const comprobante_url = req.file ? req.file.path : null;
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();

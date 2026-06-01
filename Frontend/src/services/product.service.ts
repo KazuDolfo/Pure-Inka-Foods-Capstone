@@ -104,9 +104,14 @@ export class ProductService {
 
   private buildImageUrl(imagePath: string | undefined): string {
     if (!imagePath) return 'assets/pure-inka-logo.png';
+    
+    // Si ya es una URL completa (Cloudinary), devolverla tal cual
     if (imagePath.startsWith('http')) return imagePath;
     
-    // Según especificación: /public/uploads/products/
+    // Si es una imagen local (por ejemplo, de la base de datos local anterior)
+    if (imagePath === 'pure-inka-logo.png') return 'assets/pure-inka-logo.png';
+    
+    // Caso por defecto para desarrollo local con archivos estáticos
     const baseUrl = environment.apiUrl.replace('/api', '');
     return `${baseUrl}/public/uploads/products/${imagePath}`;
   }
