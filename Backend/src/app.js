@@ -16,17 +16,22 @@ const statsRoutes = require('./routes/statsRoutes');
 
 const app = express();
 
+// 1. CORS debe ser lo PRIMERO
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
+}));
+
+// Responder manualmente a preflight (OPTIONS)
+app.options('*', cors());
+
 app.disable('x-powered-by'); 
 
 app.use(helmet({
   crossOriginResourcePolicy: false,
   contentSecurityPolicy: false,
-}));
-
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(morgan('dev'));
 app.use(express.json());
