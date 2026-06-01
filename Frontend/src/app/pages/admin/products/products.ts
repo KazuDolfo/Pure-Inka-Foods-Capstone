@@ -60,7 +60,8 @@ export class ProductsComponent implements OnInit {
 
   async ngOnInit() {
     await this.productService.loadCategories();
-    await this.productService.loadProducts();
+    // Aumentamos el límite a 100 para que el admin vea todos los productos de una vez
+    await this.productService.loadProducts('', '', 1, 100);
   }
 
   onFileSelected(event: Event) {
