@@ -115,7 +115,7 @@ export class ProductsComponent implements OnInit {
           this.showMessage('Producto creado exitosamente');
           this.productForm.reset({ stock_actual: 0 });
           this.selectedFile = null;
-          this.productService.loadProducts();
+          this.productService.loadProducts('', '', 1, 100);
           this.showAddProductModal.set(false);
         },
         error: (err) => this.showError(err.message || 'Error al crear producto.')
@@ -154,7 +154,7 @@ export class ProductsComponent implements OnInit {
         next: () => {
           this.showMessage('Producto actualizado');
           this.selectedProduct.set(null);
-          this.productService.loadProducts();
+          this.productService.loadProducts('', '', 1, 100);
         },
         error: (err) => this.showError(err.message)
       });
@@ -179,7 +179,7 @@ export class ProductsComponent implements OnInit {
     this.adminService.updateStock(product.id, data).subscribe({
       next: () => {
         this.showMessage('Stock actualizado');
-        this.productService.loadProducts();
+        this.productService.loadProducts('', '', 1, 100);
         this.editingStockId = null;
       },
       error: (err) => this.showError(err.message)
@@ -191,7 +191,7 @@ export class ProductsComponent implements OnInit {
       this.adminService.deleteProduct(id).subscribe({
         next: () => {
           this.showMessage('Producto eliminado');
-          this.productService.loadProducts();
+          this.productService.loadProducts('', '', 1, 100);
         },
         error: (err) => this.showError(err.message)
       });
