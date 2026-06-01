@@ -5,11 +5,35 @@ const pool = require('../config/db');
 const asyncHandler = require('express-async-handler');
 
 const getProducts = asyncHandler(async (req, res) => {
-  const { search, category } = req.query;
-  const rows = await productRepository.findAll({ search, category });
+  const { search, category, page = 1, limit = 9 } = req.query;
+  const offset = (page - 1) * limit;
+
+  const rows = await productRepository.findAll({ search, category, limit, offset });
+  const total = await productRepository.countAll({ search, category });
+
   res.json({
     success: true,
     data: rows,
+    pagination: {
+      total,
+      page: Number(page),
+      limit: Number(limit),
+      pages: Math.ceil(total / limit)
+    }
+  });
+});
+
+const getSuggestedProducts = asyncHandler(async (req, res) => {
+  const product = await productRepository.findById(req.params.id);
+  if (!product) {
+    res.status(404);
+    throw new Error('Producto no encontrado');
+  }
+
+  const suggested = await productRepository.findSuggested(product.id_categoria, product.id_producto);
+  res.json({
+    success: true,
+    data: suggested
   });
 });
 
@@ -169,6 +193,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 module.exports = {
   getProducts,
   getProductById,
+  getSuggestedProducts,
   createProduct,
   updateProductStock,
   updateProduct,

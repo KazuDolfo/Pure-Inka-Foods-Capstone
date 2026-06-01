@@ -72,3 +72,4 @@ export class MessageService {
     return this.http.put(`${this.API_URL}/read/${id_conversacion}`, {}, { headers: this.getHeaders() });
   }
 }
+

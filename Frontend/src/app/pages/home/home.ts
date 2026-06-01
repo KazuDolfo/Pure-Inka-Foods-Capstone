@@ -15,6 +15,7 @@ import { ProductService } from '../../../services/product.service';
 })
 export class Home implements OnInit {
   featuredProducts: Product[] = [];
+  suggestedProducts: Product[] = [];
   loading = false;
   error: string | null = null;
 
@@ -24,13 +25,16 @@ export class Home implements OnInit {
     this.loading = true;
     this.error = null;
     try {
-      await this.productService.loadProducts();
-      this.featuredProducts = this.productService.getProducts().slice(0, 4);
+      await this.productService.loadProducts('', '', 1, 8);
+      const all = this.productService.getProducts();
+      this.featuredProducts = all.slice(0, 4);
+      this.suggestedProducts = all.slice(4, 8);
     } catch (err) {
-      this.error = 'No se pudieron cargar los productos destacados.';
+      this.error = 'No se pudieron cargar los productos.';
       console.error('Error en Home:', err);
     } finally {
       this.loading = false;
     }
   }
 }
+

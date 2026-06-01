@@ -19,8 +19,10 @@ export class Shop implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private destroy$ = new Subject<void>();
   selectedCategoryId: string = '';
+  currentPage: number = 1;
 
   getProducts = () => this.productService.getProducts();
+  getPagination = () => this.productService.getPagination();
 
   getCategories = () => this.productService.getCategories();
   getLoading = () => this.productService.isLoadingProducts();
@@ -34,7 +36,7 @@ export class Shop implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.productService.loadProducts();
+    await this.loadCurrentProducts();
     await this.productService.loadCategories();
 
     this.searchSubject.pipe(
@@ -43,8 +45,13 @@ export class Shop implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(async term => {
       this.searchTerm = term;
-      await this.productService.loadProducts(this.searchTerm, this.selectedCategoryId);
+      this.currentPage = 1;
+      await this.loadCurrentProducts();
     });
+  }
+
+  async loadCurrentProducts(): Promise<void> {
+    await this.productService.loadProducts(this.searchTerm, this.selectedCategoryId, this.currentPage);
   }
 
   ngOnDestroy(): void {
@@ -59,12 +66,22 @@ export class Shop implements OnInit, OnDestroy {
 
   async selectCategory(id: string): Promise<void> {
     this.selectedCategoryId = id;
-    await this.productService.loadProducts(this.searchTerm, this.selectedCategoryId);
+    this.currentPage = 1;
+    await this.loadCurrentProducts();
+  }
+
+  async changePage(page: number): Promise<void> {
+    if (page < 1 || (this.getPagination() && page > this.getPagination()!.pages)) return;
+    this.currentPage = page;
+    await this.loadCurrentProducts();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async clearFilters(): Promise<void> {
     this.searchTerm = '';
     this.selectedCategoryId = '';
-    await this.productService.loadProducts();
+    this.currentPage = 1;
+    await this.loadCurrentProducts();
   }
 }
+

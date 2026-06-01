@@ -224,6 +224,38 @@ const resetPasswordWithCode = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Contraseña restablecida correctamente' });
 });
 
+const getUsers = asyncHandler(async (req, res) => {
+  const users = await userRepository.findAll();
+  res.json({
+    success: true,
+    data: users
+  });
+});
+
+const updateUserStatus = asyncHandler(async (req, res) => {
+  const { activo } = req.body;
+  const result = await userRepository.toggleActive(req.params.id, activo);
+
+  if (result.affectedRows > 0) {
+    res.json({ success: true, message: 'Estado de usuario actualizado' });
+  } else {
+    res.status(404);
+    throw new Error('Usuario no encontrado');
+  }
+});
+
+const updateUserRole = asyncHandler(async (req, res) => {
+  const { rol } = req.body;
+  const result = await userRepository.updateRole(req.params.id, rol);
+
+  if (result.affectedRows > 0) {
+    res.json({ success: true, message: 'Rol de usuario actualizado' });
+  } else {
+    res.status(404);
+    throw new Error('Usuario no encontrado');
+  }
+});
+
 module.exports = {
   authUser,
   authAdmin,
@@ -233,5 +265,8 @@ module.exports = {
   updateUserPassword,
   forgotPassword,
   verifyResetCode,
-  resetPasswordWithCode
+  resetPasswordWithCode,
+  getUsers,
+  updateUserStatus,
+  updateUserRole
 };

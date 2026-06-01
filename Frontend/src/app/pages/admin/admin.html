@@ -1,6 +1,6 @@
 <div class="admin-container">
   
-  
+  <!-- Mobile Header -->
   <header class="admin-mobile-header d-lg-none">
     <button class="btn-toggle-sidebar" (click)="toggleSidebar()">
       <i class="bi bi-list fs-2"></i>
@@ -14,6 +14,7 @@
 
   <div class="admin-layout">
     
+    <!-- Sidebar -->
     <aside class="admin-sidebar" [class.open]="isSidebarOpen()">
       <div class="sidebar-header d-none d-lg-flex">
         <a [routerLink]="['/']" class="sidebar-brand">
@@ -50,6 +51,12 @@
             </a>
           </li>
           <li>
+            <a [routerLink]="['/admin/users']" class="nav-link" routerLinkActive="active" (click)="closeSidebar()">
+              <i class="bi bi-people me-3"></i>
+              <span>Usuarios</span>
+            </a>
+          </li>
+          <li>
             <a [routerLink]="['/admin/messages']" class="nav-link" routerLinkActive="active" (click)="closeSidebar()">
               <i class="bi bi-chat-left-text me-3"></i>
               <span>Mensajes</span>
@@ -72,7 +79,7 @@
       </div>
     </aside>
 
-    
+    <!-- Main Content -->
     <main class="admin-main-content">
       <div class="content-wrapper p-3 p-md-4">
         <router-outlet></router-outlet>
@@ -80,6 +87,6 @@
     </main>
   </div>
 
-  
+  <!-- Overlay for mobile -->
   <div class="admin-overlay d-lg-none" [class.show]="isSidebarOpen()" (click)="closeSidebar()"></div>
 </div>

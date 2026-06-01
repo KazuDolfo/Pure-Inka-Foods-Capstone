@@ -1,7 +1,7 @@
 const pool = require('../config/db');
 
 class ProductRepository {
-  async findAll({ search, category }) {
+  async findAll({ search, category, limit, offset }) {
     let query = `
       SELECT p.*, c.nombre as category_name 
       FROM Producto p
@@ -20,7 +20,44 @@ class ProductRepository {
       params.push(category);
     }
 
+    if (limit !== undefined && offset !== undefined) {
+      query += ' LIMIT ? OFFSET ?';
+      params.push(Number(limit), Number(offset));
+    }
+
     const [rows] = await pool.query(query, params);
+    return rows;
+  }
+
+  async countAll({ search, category }) {
+    let query = `
+      SELECT COUNT(*) as total 
+      FROM Producto p
+      WHERE p.activo = TRUE
+    `;
+    const params = [];
+
+    if (search) {
+      query += ' AND (p.nombre LIKE ? OR p.sku LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    if (category) {
+      query += ' AND p.id_categoria = ?';
+      params.push(category);
+    }
+
+    const [rows] = await pool.query(query, params);
+    return rows[0].total;
+  }
+
+  async findSuggested(categoryId, excludeProductId, limit = 4) {
+    const [rows] = await pool.query(
+      `SELECT * FROM Producto 
+       WHERE id_categoria = ? AND id_producto != ? AND activo = TRUE 
+       ORDER BY RAND() LIMIT ?`,
+      [categoryId, excludeProductId, Number(limit)]
+    );
     return rows;
   }
 

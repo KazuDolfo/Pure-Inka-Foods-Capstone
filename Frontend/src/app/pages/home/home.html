@@ -90,6 +90,22 @@
       </div>
     }
 
+    <!-- Suggested Products Section -->
+    @if (!loading && !error && suggestedProducts.length > 0) {
+      <div class="mt-5 pt-5 animate__animated animate__fadeInUp">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="h3 fw-bold text-inkapt-dark mb-0">Recomendados para ti</h2>
+        </div>
+        <div class="row g-4">
+          @for (product of suggestedProducts; track product.id) {
+            <div class="col-lg-3 col-md-4 col-sm-6">
+              <app-product-card [product]="product"></app-product-card>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
     <div class="text-center mt-5 d-md-none">
       <a [routerLink]="['/shop']" class="btn btn-premium btn-success w-100">VER TODO</a>
     </div>
@@ -113,3 +129,4 @@
     </div>
   </div>
 </section>
+

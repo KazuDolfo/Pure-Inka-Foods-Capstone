@@ -47,3 +47,4 @@ describe('Auth Component', () => {
     expect(component.authMessage).toBe('Las contraseñas no coinciden.');
   });
 });
+

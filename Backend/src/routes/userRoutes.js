@@ -10,9 +10,12 @@ const {
   updateUserPassword,
   forgotPassword,
   verifyResetCode,
-  resetPasswordWithCode
+  resetPasswordWithCode,
+  getUsers,
+  updateUserStatus,
+  updateUserRole
 } = require('../controllers/userController');
-const { protect } = require('../middlewares/authMiddleware');
+const { protect, authorize } = require('../middlewares/authMiddleware');
 
 const validateRequest = (req, res, next) => {
   const errors = validationResult(req);
@@ -42,5 +45,10 @@ router.post('/reset-password', resetPasswordWithCode);
 router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 router.put('/password', protect, updateUserPassword);
+
+// Rutas Administrativas
+router.get('/', protect, authorize('ADMIN'), getUsers);
+router.put('/:id/status', protect, authorize('ADMIN'), updateUserStatus);
+router.put('/:id/role', protect, authorize('ADMIN'), updateUserRole);
 
 module.exports = router;

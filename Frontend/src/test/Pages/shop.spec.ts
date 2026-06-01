@@ -46,3 +46,4 @@ describe('Shop Component', () => {
     expect(component.searchTerm).toBe('Maca');
   }));
 });
+

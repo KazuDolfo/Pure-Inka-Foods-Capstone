@@ -23,3 +23,4 @@ export interface Conversacion {
   ultima_actualizacion: string;
   foto_url?: string;
 }
+

@@ -1,4 +1,3 @@
-
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
@@ -9,7 +8,7 @@ import {
   CategoriesApiResponse,
   ProductApiResponse
 } from '../models/api.models';
-import { catchError, of, firstValueFrom, Observable } from 'rxjs';
+import { catchError, of, firstValueFrom, Observable, map } from 'rxjs';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -27,19 +26,20 @@ export class ProductService {
   private API_PRODUCTS_URL = `${environment.apiUrl}/products`;
   private API_CATEGORIES_URL = `${environment.apiUrl}/categories`; 
 
-  async loadProducts(search?: string, category?: string): Promise<void> {
+  private pagination = signal<{ total: number, page: number, limit: number, pages: number } | null>(null);
+
+  async loadProducts(search?: string, category?: string, page: number = 1, limit: number = 9): Promise<void> {
     this.loadingProducts.set(true);
     this.errorProducts.set(null);
     try {
-      let url = this.API_PRODUCTS_URL;
-      const params = [];
-      if (search) params.push(`search=${encodeURIComponent(search)}`);
-      if (category) params.push(`category=${category}`);
-      if (params.length > 0) url += `?${params.join('&')}`;
+      let url = `${this.API_PRODUCTS_URL}?page=${page}&limit=${limit}`;
+      if (search) url += `&search=${encodeURIComponent(search)}`;
+      if (category) url += `&category=${category}`;
 
       const response = await firstValueFrom(this.http.get<ProductsApiResponse>(url));
       if (response.success && Array.isArray(response.data)) {
         this.products.set(response.data.map(p => this.mapApiProductToProduct(p)));
+        this.pagination.set(response.pagination || null);
       } else {
         this.errorProducts.set('Error al cargar productos');
       }
@@ -50,6 +50,15 @@ export class ProductService {
       this.loadingProducts.set(false);
     }
   }
+
+  getSuggestedProducts(productId: string | number): Observable<Product[]> {
+    return this.http.get<any>(`${this.API_PRODUCTS_URL}/${productId}/suggested`).pipe(
+      map(res => res.success ? res.data.map((p: any) => this.mapApiProductToProduct(p)) : []),
+      catchError(() => of([]))
+    );
+  }
+
+  getPagination = () => this.pagination();
 
   async loadCategories(): Promise<void> {
     this.loadingCategories.set(true);
@@ -97,6 +106,7 @@ export class ProductService {
     if (!imagePath) return 'assets/pure-inka-logo.png';
     if (imagePath.startsWith('http')) return imagePath;
     
+    // Según especificación: /public/uploads/products/
     const baseUrl = environment.apiUrl.replace('/api', '');
     return `${baseUrl}/public/uploads/products/${imagePath}`;
   }

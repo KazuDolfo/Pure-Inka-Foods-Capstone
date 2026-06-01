@@ -42,3 +42,4 @@ describe('ProductCard', () => {
     expect(component).toBeTruthy();
   });
 });
+

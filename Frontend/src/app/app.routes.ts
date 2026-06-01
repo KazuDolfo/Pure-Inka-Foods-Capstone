@@ -20,6 +20,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./pages/admin/dashboard/dashboard').then(m => m.DashboardComponent), title: 'Admin - Dashboard' },
       { path: 'products', loadComponent: () => import('./pages/admin/products/products').then(m => m.ProductsComponent), title: 'Admin - Productos' },
       { path: 'orders', loadComponent: () => import('./pages/admin/orders/orders').then(m => m.Orders), title: 'Admin - Pedidos' },
+      { path: 'users', loadComponent: () => import('./pages/admin/users/users').then(m => m.UsersComponent), title: 'Admin - Usuarios' },
       { path: 'messages', loadComponent: () => import('./pages/admin/messages/messages').then(m => m.MessagesComponent), title: 'Admin - Mensajes' },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]

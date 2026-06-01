@@ -72,10 +72,23 @@ class UserRepository {
     return rows[0];
   }
 
-  async resetPassword(userId, hashedPassword) {
+  async findAll() {
+    const [rows] = await pool.query('SELECT id_usuario, nombre, email, telefono, rol, fecha_registro, activo FROM Usuario ORDER BY fecha_registro DESC');
+    return rows;
+  }
+
+  async toggleActive(userId, active) {
     const [result] = await pool.query(
-      'UPDATE Usuario SET contrasena = ?, codigo_recuperacion = NULL, codigo_expiracion = NULL WHERE id_usuario = ?',
-      [hashedPassword, userId]
+      'UPDATE Usuario SET activo = ? WHERE id_usuario = ?',
+      [active, userId]
+    );
+    return result;
+  }
+
+  async updateRole(userId, role) {
+    const [result] = await pool.query(
+      'UPDATE Usuario SET rol = ? WHERE id_usuario = ?',
+      [role, userId]
     );
     return result;
   }

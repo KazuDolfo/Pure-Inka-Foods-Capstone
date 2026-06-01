@@ -16,15 +16,15 @@ export class AdminService {
     let headers = new HttpHeaders();
     if (token) headers = headers.set('Authorization', `Bearer ${token}`);
     
-    
-    
+    // IMPORTANTE: Si es FormData, NO seteamos Content-Type. 
+    // El navegador lo hace solo para incluir el 'boundary'.
     if (!isFormData) {
       headers = headers.set('Content-Type', 'application/json');
     }
     return headers;
   }
 
-  
+  // CATEGORÍAS
   getCategories(): Observable<any[]> {
     return this.http.get<any>(`${this.API_BASE_URL}/categories`).pipe(
       map(res => res.success ? res.data : []),
@@ -36,9 +36,8 @@ export class AdminService {
     return this.http.post(`${this.API_BASE_URL}/categories`, categoryData, { headers: this.getAuthHeaders() });
   }
 
-  
+  // PRODUCTOS
   addProduct(productData: FormData): Observable<any> {
-    
     return this.http.post(`${this.API_BASE_URL}/products`, productData, { headers: this.getAuthHeaders(true) });
   }
 
@@ -54,7 +53,22 @@ export class AdminService {
     return this.http.delete(`${this.API_BASE_URL}/products/${id}`, { headers: this.getAuthHeaders() });
   }
 
-  
+  // USUARIOS
+  getUsers(): Observable<any[]> {
+    return this.http.get<any>(`${this.API_BASE_URL}/users`, { headers: this.getAuthHeaders() }).pipe(
+      map(res => res.success ? res.data : []),
+      catchError(err => throwError(() => new Error(err.error?.message || 'Error al obtener usuarios')))
+    );
+  }
+
+  updateUserStatus(id: number, activo: boolean): Observable<any> {
+    return this.http.put(`${this.API_BASE_URL}/users/${id}/status`, { activo }, { headers: this.getAuthHeaders() });
+  }
+
+  updateUserRole(id: number, rol: string): Observable<any> {
+    return this.http.put(`${this.API_BASE_URL}/users/${id}/role`, { rol }, { headers: this.getAuthHeaders() });
+  }
+
   getUserProfile(id: number): Observable<any> {
     return this.http.get<any>(`${this.API_BASE_URL}/users/profile/${id}`, { headers: this.getAuthHeaders() }).pipe(
       map(res => res.success ? res.data : null),
@@ -69,7 +83,7 @@ export class AdminService {
     );
   }
 
-  
+  // DASHBOARD
   getDashboardStats(range: string = '30d'): Observable<any> {
     return this.http.get<any>(`${this.API_BASE_URL}/stats/dashboard?range=${range}`, { headers: this.getAuthHeaders() }).pipe(
       map(res => res.success ? res.data : null),

@@ -56,7 +56,8 @@ export class AuthService {
         if (response.success && response.data) {
           this.handleAuthResponse(response.data);
         }
-      })
+      }),
+      catchError(err => throwError(() => err))
     );
   }
 
@@ -66,7 +67,8 @@ export class AuthService {
         if (response.success && response.data) {
           this.handleAuthResponse(response.data);
         }
-      })
+      }),
+      catchError(err => throwError(() => err))
     );
   }
 

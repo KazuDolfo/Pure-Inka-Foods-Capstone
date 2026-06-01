@@ -14,3 +14,4 @@ export interface Usuario {
   tipo_cliente?: TipoCliente;
   email_verificado?: boolean;
 }
+

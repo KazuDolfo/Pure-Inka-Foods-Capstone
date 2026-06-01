@@ -18,7 +18,6 @@ const processProductImage = async (req, res, next) => {
       .webp({ quality: 80 })
       .toFile(outputPath);
 
-    
     req.file.filename = fileName;
     req.file.path = outputPath;
     

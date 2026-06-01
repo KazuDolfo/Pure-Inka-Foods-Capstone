@@ -1,0 +1,29 @@
+.bg-success-light { background-color: rgba(25, 135, 84, 0.1); }
+.bg-danger-light { background-color: rgba(220, 53, 69, 0.1); }
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  border: none;
+  background: transparent;
+
+  &:hover {
+    background: rgba(0,0,0,0.05);
+  }
+}
+
+.card-premium {
+  background: white;
+  border-radius: 1rem;
+}
+
+select.form-select-sm {
+  font-size: 0.8rem;
+  font-weight: 500;
+}

@@ -311,3 +311,4 @@ export class Checkout implements OnInit {
     setTimeout(() => this.router.navigate(['/user-profile']), 3000);
   }
 }
+

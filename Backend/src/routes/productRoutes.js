@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const router = express.Router();
-const { getProducts, getProductById, createProduct, updateProductStock, updateProduct, deleteProduct } = require('../controllers/productController');
+const { getProducts, getProductById, createProduct, updateProductStock, updateProduct, deleteProduct, getSuggestedProducts } = require('../controllers/productController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
 
 const { processProductImage } = require('../middlewares/imageMiddleware');
@@ -30,6 +30,7 @@ const upload = multer({
 
 router.get('/', getProducts);
 router.get('/:id', getProductById);
+router.get('/:id/suggested', getSuggestedProducts);
 router.post('/', protect, authorize('ADMIN'), upload.single('image'), processProductImage, createProduct);
 router.put('/:id', protect, authorize('ADMIN'), upload.single('image'), processProductImage, updateProduct);
 router.put('/:id/stock', protect, authorize('ADMIN'), updateProductStock);
