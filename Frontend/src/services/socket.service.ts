@@ -32,7 +32,7 @@ export class SocketService {
     this.socket = io(socketUrl, {
       auth: { token },
       transports: ['websocket']
-    });
+    } as any);
 
     
     this.socket.on('receive_message', (message: any) => {

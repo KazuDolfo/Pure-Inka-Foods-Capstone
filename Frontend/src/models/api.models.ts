@@ -26,7 +26,14 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-export type ProductsApiResponse = ApiResponse<ApiProduct[]>;
+export interface ProductsApiResponse extends ApiResponse<ApiProduct[]> {
+  pagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    pages: number;
+  };
+}
 export type CategoriesApiResponse = ApiResponse<ApiCategory[]>;
 export type ProductApiResponse = ApiResponse<ApiProduct>;
 
