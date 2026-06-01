@@ -23,7 +23,10 @@ CREATE TABLE Usuario (
     contrasena VARCHAR(255) NOT NULL,
     rol ENUM('ADMIN', 'CLIENTE') NOT NULL DEFAULT 'CLIENTE',
     telefono VARCHAR(20),
-    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    activo BOOLEAN DEFAULT TRUE,
+    codigo_recuperacion VARCHAR(6),
+    codigo_expiracion DATETIME
 );
 
 

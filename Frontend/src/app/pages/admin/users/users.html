@@ -22,13 +22,14 @@
             <th>Email</th>
             <th>Teléfono</th>
             <th>Rol</th>
+            <th>Estado</th>
             <th class="text-end pe-4">Acciones</th>
           </tr>
         </thead>
         <tbody>
           @if (loading) {
             <tr>
-              <td colspan="6" class="text-center py-5">
+              <td colspan="7" class="text-center py-5">
                 <div class="spinner-border text-success" role="status"></div>
                 <p class="mt-2 text-muted mb-0">Cargando usuarios...</p>
               </td>
@@ -52,13 +53,23 @@
                     <option value="ADMIN">Administrador</option>
                   </select>
                 </td>
+                <td>
+                  <span class="badge rounded-pill" [ngClass]="user.activo ? 'bg-success-light text-success' : 'bg-danger-light text-danger'">
+                    {{ user.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
                 <td class="text-end pe-4">
-                  <span class="text-muted small">Sin acciones adicionales</span>
+                  <button class="btn btn-icon" 
+                          [ngClass]="user.activo ? 'text-danger' : 'text-success'"
+                          (click)="toggleUserStatus(user)"
+                          [title]="user.activo ? 'Desactivar' : 'Activar'">
+                    <i class="bi" [ngClass]="user.activo ? 'bi-person-x-fill' : 'bi-person-check-fill'"></i>
+                  </button>
                 </td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="6" class="text-center py-5">
+                <td colspan="7" class="text-center py-5">
                   <i class="bi bi-people fs-1 text-muted opacity-25"></i>
                   <p class="mt-2 text-muted">No se encontraron usuarios en el sistema.</p>
                 </td>

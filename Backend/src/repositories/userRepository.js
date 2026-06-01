@@ -73,7 +73,7 @@ class UserRepository {
   }
 
   async findAll() {
-    const [rows] = await pool.query('SELECT id_usuario, nombre, email, telefono, rol, fecha_registro FROM Usuario ORDER BY fecha_registro DESC');
+    const [rows] = await pool.query('SELECT id_usuario, nombre, email, telefono, rol, fecha_registro, activo FROM Usuario ORDER BY fecha_registro DESC');
     return rows;
   }
 
