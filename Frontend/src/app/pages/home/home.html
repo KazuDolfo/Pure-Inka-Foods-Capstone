@@ -62,21 +62,21 @@
       </a>
     </div>
 
-    @if (loading) {
+    @if (isLoading()) {
       <div class="text-center py-5">
         <div class="spinner-border text-success" role="status"></div>
       </div>
     }
 
-    @if (error) {
+    @if (getError()) {
       <div class="alert alert-warning text-center rounded-4 shadow-sm">
-        {{ error }}
+        {{ getError() }}
       </div>
     }
 
-    @if (!loading && !error && featuredProducts.length > 0) {
+    @if (!isLoading() && !getError() && featuredProducts().length > 0) {
       <div class="row g-4">
-        @for (product of featuredProducts; track product.id) {
+        @for (product of featuredProducts(); track product.id) {
           <div class="col-lg-3 col-md-4 col-sm-6">
             <app-product-card [product]="product"></app-product-card>
           </div>
@@ -84,20 +84,20 @@
       </div>
     }
 
-    @if (!loading && !error && featuredProducts.length === 0) {
+    @if (!isLoading() && !getError() && featuredProducts().length === 0) {
       <div class="text-center py-5 bg-light rounded-5">
         <p class="mb-0">No hay productos destacados en este momento.</p>
       </div>
     }
 
     <!-- Suggested Products Section -->
-    @if (!loading && !error && suggestedProducts.length > 0) {
+    @if (!isLoading() && !getError() && suggestedProducts().length > 0) {
       <div class="mt-5 pt-5 animate__animated animate__fadeInUp">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="h3 fw-bold text-inkapt-dark mb-0">Recomendados para ti</h2>
         </div>
         <div class="row g-4">
-          @for (product of suggestedProducts; track product.id) {
+          @for (product of suggestedProducts(); track product.id) {
             <div class="col-lg-3 col-md-4 col-sm-6">
               <app-product-card [product]="product"></app-product-card>
             </div>

@@ -1,31 +1,29 @@
-# Guía de Instalación del Proyecto
+GUIA DE INSTALACION DEL PROYECTO
 
 Sigue estos pasos para configurar y ejecutar la plataforma Pure Inka Foods en tu entorno local.
 
-## 1. Requisitos del Sistema
+1. REQUISITOS DEL SISTEMA
 
 Asegúrate de contar con las siguientes herramientas instaladas:
 - Node.js (v18+) y npm.
 - MySQL Server (v8.0+).
 - Git.
-- Angular CLI (opcional, instalado vía `npm install -g @angular/cli`).
+- Angular CLI.
 
-## 2. Preparación de la Base de Datos
+2. PREPARACION DE LA BASE DE DATOS
 
 1. Inicia tu servidor MySQL.
 2. Abre tu herramienta de gestión (ej. MySQL Workbench o terminal).
-3. Ejecuta el archivo `DDL-bd_pureinka.sql` para crear la estructura de tablas.
-4. (Opcional) Ejecuta `DML-Pure inka.sql` si deseas cargar datos de prueba iniciales (productos, categorías y usuarios).
+3. Ejecuta el archivo DDL-bd_pureinka.sql para crear la estructura de tablas.
+4. Ejecuta DML-Pure inka.sql para cargar datos de prueba iniciales.
 
-## 3. Configuración del Backend
+3. CONFIGURACION DEL BACKEND
 
-1. Abre una terminal en la carpeta `Backend`.
-2. Instala las dependencias:
-   ```bash
+1. Abre una terminal en la carpeta Backend.
+2. Instala las dependencias (se han configurado overrides para evitar conflictos):
    npm install
-   ```
-3. Crea un archivo `.env` basado en el siguiente ejemplo:
-   ```env
+   Nota: Si encuentras errores de dependencias de pares, usa npm install --legacy-peer-deps.
+3. Crea un archivo .env basado en el siguiente ejemplo:
    PORT=5000
    DB_HOST=localhost
    DB_USER=tu_usuario
@@ -34,28 +32,29 @@ Asegúrate de contar con las siguientes herramientas instaladas:
    JWT_SECRET=tu_secreto_seguro
    BCRYPT_SALT_ROUNDS=12
    STRIPE_SECRET_KEY=tu_llave_de_stripe
-   ```
 4. Inicia el servidor:
-   ```bash
    npm start
-   ```
 
-## 4. Configuración del Frontend
+4. CONFIGURACION DEL FRONTEND
 
-1. Abre una terminal en la carpeta `Frontend`.
+1. Abre una terminal en la carpeta Frontend.
 2. Instala las dependencias:
-   ```bash
    npm install
-   ```
-3. Verifica la configuración en `src/environments/environment.ts` para asegurar que apunta a la URL correcta del backend.
+3. Verifica la configuración en src/environments/environment.ts para asegurar que apunta a la URL correcta del backend.
 4. Inicia la aplicación:
-   ```bash
    npm start
-   ```
-5. Accede a `http://localhost:4200` en tu navegador.
+5. Accede a http://localhost:4200 en tu navegador.
 
-## 5. Cuentas de Prueba
+5. CUENTAS DE PRUEBA (ACCESO RAPIDO)
 
-Si utilizaste el archivo DML, puedes usar estas credenciales:
-- **Cliente**: berna@gmail.com / 123456
-- **Administrador**: admin@pureinka.com / 123456
+Utiliza estas credenciales para probar las funcionalidades de inmediato:
+
+ADMINISTRADOR:
+- Correo: admin@pureinka.com
+- Contraseña: admin123
+
+CLIENTE / USUARIO:
+- Correo: cliente@pureinka.com
+- Contraseña: cliente123
+
+Nota: Asegúrate de que estos usuarios existan en tu base de datos o regístralos manualmente desde la interfaz.
