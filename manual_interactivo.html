@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Interactivo - Pure Inka Foods</title>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --secondary: #f1f8e9;
+            --accent: #81c784;
+            --text: #333;
+            --border: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+
+        h1 { color: var(--primary); margin: 0; }
+        h2 { color: var(--primary); border-left: 5px solid var(--primary); padding-left: 10px; margin-top: 40px; }
+        h3 { color: var(--accent); margin-top: 25px; }
+
+        .section-desc { margin-bottom: 20px; line-height: 1.6; }
+
+        .image-placeholder {
+            width: 100%;
+            min-height: 150px;
+            height: auto;
+            background-color: #f9f9f9;
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+
+        .image-placeholder:hover {
+            border-color: var(--primary);
+            background-color: #f0f4f0;
+        }
+
+        .image-placeholder span {
+            color: #999;
+            font-weight: bold;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .image-placeholder img {
+            width: 100%;
+            height: auto;
+            display: none;
+            border-radius: 4px;
+        }
+
+        .image-placeholder input[type="file"] {
+            display: none;
+        }
+
+        .btn-export {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        /* OPTIMIZACIÓN PARA IMPRESIÓN / PDF */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 1cm;
+            }
+
+            body { background-color: white !important; }
+            
+            .container { 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                padding: 0 !important;
+                width: 100% !important; 
+                max-width: none !important; 
+            }
+
+            .btn-export { display: none !important; }
+
+            .manual-item {
+                page-break-after: always;
+                break-inside: avoid;
+                padding-top: 10px;
+                width: 100%;
+            }
+
+            h2 { page-break-before: always; }
+
+            .image-placeholder {
+                border: none !important;
+                background-color: transparent !important;
+                width: 100%;
+            }
+
+            .image-placeholder span {
+                display: none !important;
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
+                max-height: 16cm; /* Ajuste para que quepa en horizontal */
+                display: block;
+                margin: 0 auto;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-export" onclick="window.print()">Previsualizar y Guardar PDF</button>
+
+    <div class="container" id="manual-content">
+        <header>
+            <h1>MANUAL DE USUARIO: PURE INKA FOODS</h1>
+            <p>Guía Visual Completa</p>
+        </header>
+
+        <!-- SECCION CLIENTE -->
+        <h2>1. MÓDULO DE CLIENTE</h2>
+
+        <div class="manual-item">
+            <h3>1.1 Página de Inicio (Home)</h3>
+            <p class="section-desc">Portal de entrada con productos destacados y banners promocionales.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: HOME</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Home Page">
+            </div>
+        </div>
+
+        <div class="manual-item">
+            <h3>1.2 Tienda (Catálogo)</h3>
+            <p class="section-desc">Exploración de productos con filtros por categoría y búsqueda en tiempo real.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: SHOP / TIENDA</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Shop Page">
+            </div>
+        </div>
+
+        <div class="manual-item">
+            <h3>1.3 Detalle de Producto y Carrito</h3>
+            <p class="section-desc">Visualización de información detallada y gestión de artículos seleccionados.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: PRODUCTO / CARRITO</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Cart Page">
+            </div>
+        </div>
+
+        <div class="manual-item">
+            <h3>1.4 Proceso de Checkout (Pago)</h3>
+            <p class="section-desc">Finalización de compra: selección de dirección, método de pago y envío de comprobante.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: CHECKOUT</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Checkout Page">
+            </div>
+        </div>
+
+        <div class="manual-item">
+            <h3>1.5 Panel de Usuario</h3>
+            <p class="section-desc">Historial de pedidos, descarga de facturas y gestión de perfil personal.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: MI PERFIL</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Profile Page">
+            </div>
+        </div>
+
+        <!-- SECCION ADMIN -->
+        <h2>2. MÓDULO DE ADMINISTRADOR</h2>
+
+        <div class="manual-item">
+            <h3>2.1 Dashboard Administrativo</h3>
+            <p class="section-desc">Resumen visual de métricas: ventas totales, usuarios y alertas de stock.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: DASHBOARD ADMIN</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Admin Dashboard">
+            </div>
+        </div>
+
+        <div class="manual-item">
+            <h3>2.2 Gestión de Pedidos</h3>
+            <p class="section-desc">Control total sobre los pedidos, validación de pagos y actualización de estados.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: GESTIÓN DE PEDIDOS</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Order Management">
+            </div>
+        </div>
+
+        <div class="manual-item">
+            <h3>2.3 Soporte y Mensajería</h3>
+            <p class="section-desc">Sistema de comunicación directa con clientes para resolver dudas.</p>
+            <div class="image-placeholder" onclick="triggerUpload(this)">
+                <span>SUBIR CAPTURA: MENSAJES</span>
+                <input type="file" accept="image/*" onchange="previewImage(this)">
+                <img alt="Messages Page">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function triggerUpload(el) {
+            el.querySelector('input').click();
+        }
+
+        function previewImage(input) {
+            const placeholder = input.parentElement;
+            const span = placeholder.querySelector('span');
+            const img = placeholder.querySelector('img');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                    span.style.display = 'none';
+                    placeholder.style.borderStyle = 'none';
+                    placeholder.style.backgroundColor = 'transparent';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

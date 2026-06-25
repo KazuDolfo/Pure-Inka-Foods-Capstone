@@ -2,6 +2,23 @@ const cartRepository = require('../repositories/cartRepository');
 const productRepository = require('../repositories/productRepository');
 const asyncHandler = require('express-async-handler');
 
+const syncCart = asyncHandler(async (req, res) => {
+  const { localCart } = req.body;
+  const userId = req.user.id_usuario;
+
+  if (localCart && Array.isArray(localCart)) {
+    const id_carrito = await cartRepository.getOrCreateCart(userId);
+    for (const item of localCart) {
+      if (item.id_producto && item.cantidad) {
+        await cartRepository.addItem(id_carrito, item.id_producto, item.cantidad);
+      }
+    }
+  }
+
+  const items = await cartRepository.getItems(userId);
+  res.json({ success: true, data: items });
+});
+
 const getCart = asyncHandler(async (req, res) => {
   const userId = req.user.id_usuario;
   const items = await cartRepository.getItems(userId);
@@ -69,5 +86,6 @@ module.exports = {
   getCart,
   addToCart,
   removeFromCart,
-  clearCart
+  clearCart,
+  syncCart
 };

@@ -92,7 +92,7 @@ const generateOrderPDF = asyncHandler(async (req, res) => {
   const filePath = path.join(folderPath, fileName);
   const fileUrl = `/public/receipts/${fileName}`;
 
-  if (fs.existsSync(filePath)) {
+  if (order.comprobante_pdf_url && fs.existsSync(filePath)) {
     res.setHeader('Content-disposition', `inline; filename="${fileName}"`);
     res.setHeader('Content-type', 'application/pdf');
     return fs.createReadStream(filePath).pipe(res);

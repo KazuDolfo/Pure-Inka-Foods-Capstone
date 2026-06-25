@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject, effect } from '@angular/core';
+import { Injectable, signal, computed, inject, effect, untracked } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Product, CartItem } from '../models';
 import { AuthService } from './auth/auth.service';
@@ -61,7 +61,28 @@ export class CartService {
   }
 
   syncCartOnLogin() {
-    this.loadCartFromServer();
+    const localCart = untracked(() => this.cart()).map(item => ({ id_producto: item.id, cantidad: item.quantity }));
+    
+    if (localCart.length > 0 && this.authService.isAuthenticatedUser()) {
+      this.http.post<any>(`${this.API_URL}/sync`, { localCart }, { headers: this.getHeaders() }).subscribe({
+        next: (res) => {
+          if (res.success && Array.isArray(res.data)) {
+            const items: CartItem[] = res.data.map((item: any) => ({
+              id: item.id_producto,
+              name: item.nombre || 'Producto',
+              price: parseFloat(item.precio_fijo || item.precio || 0),
+              quantity: item.cantidad,
+              image: item.imagen_url || 'assets/pure-inka-logo.png'
+            }));
+            this.cart.set(items);
+            this.saveToStorage();
+          }
+        },
+        error: () => this.loadCartFromServer()
+      });
+    } else {
+      this.loadCartFromServer();
+    }
   }
 
   loadCartFromServer() {
