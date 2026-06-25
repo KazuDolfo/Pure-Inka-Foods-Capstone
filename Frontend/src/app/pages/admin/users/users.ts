@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from 'services/admin.service';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class UsersComponent implements OnInit {
   private adminService = inject(AdminService);
+  private cdr = inject(ChangeDetectorRef);
   users: any[] = [];
   loading = false;
   error: string | null = null;
@@ -26,10 +27,12 @@ export class UsersComponent implements OnInit {
       next: (data) => {
         this.users = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = err.message;
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

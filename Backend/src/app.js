@@ -53,6 +53,8 @@ app.get('/', (req, res) => {
 
 app.get('/api/health', (req, res) => res.status(200).json({ status: 'up', timestamp: new Date() }));
 
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
