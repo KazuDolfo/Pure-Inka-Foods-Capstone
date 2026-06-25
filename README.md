@@ -36,9 +36,9 @@ Antes de comenzar, asegúrate de tener instalado:
 ## Configuración Rápida
 
 1. Clona el repositorio.
-2. Configura la base de datos utilizando los archivos SQL incluidos (`DDL-bd_pureinka.sql`).
+2. Configura la base de datos utilizando los archivos SQL incluidos (`DDL-3.sql` y `DML-v1-InkaFood.sql`).
 3. Instala las dependencias en las carpetas `Backend` y `Frontend` mediante `npm install`.
-4. Define las variables de entorno necesarias (DB_HOST, DB_USER, DB_PASS, JWT_SECRET, etc.) en un archivo `.env` dentro de la carpeta `Backend`.
-5. Inicia el servidor de backend con `npm start` y el frontend con `ng serve`.
+4. Define las variables de entorno necesarias en un archivo `bd.js` (o `.env`) dentro de la carpeta `Backend/src/config`.
+5. Inicia el servidor de backend con `npm run dev` y el frontend con `npm start` (o `ng serve`).
 
-Para más detalles sobre la instalación o el uso, consulta la Guía de Instalación y el Manual de Usuario incluidos en este repositorio.
+Para más detalles sobre la instalación, perfiles de prueba, funcionalidades y uso del sistema, consulta el **[Manual de Sistema](MANUAL_SISTEMA.md)** incluido en este repositorio.

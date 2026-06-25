@@ -38,234 +38,307 @@
         }
 
         h1 { color: var(--primary); margin: 0; }
-        h2 { color: var(--primary); border-left: 5px solid var(--primary); padding-left: 10px; margin-top: 40px; }
-        h3 { color: var(--accent); margin-top: 25px; }
-
-        .section-desc { margin-bottom: 20px; line-height: 1.6; }
-
-        .image-placeholder {
-            width: 100%;
-            min-height: 150px;
-            height: auto;
-            background-color: #f9f9f9;
-            border: 2px dashed var(--border);
-            border-radius: 8px;
+        
+        .tabs {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: #eee;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            overflow: hidden;
-            position: relative;
-            margin: 20px 0;
-            transition: all 0.3s;
-        }
-
-        .image-placeholder:hover {
-            border-color: var(--primary);
-            background-color: #f0f4f0;
-        }
-
-        .image-placeholder span {
-            color: #999;
             font-weight: bold;
+            color: var(--text);
+            transition: all 0.3s;
+            flex: 1;
             text-align: center;
-            padding: 40px;
+            min-width: 150px;
         }
 
-        .image-placeholder img {
-            width: 100%;
-            height: auto;
-            display: none;
-            border-radius: 4px;
+        .tab-btn:hover {
+            background: var(--accent);
+            color: white;
         }
 
-        .image-placeholder input[type="file"] {
-            display: none;
-        }
-
-        .btn-export {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
+        .tab-btn.active {
             background: var(--primary);
             color: white;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
         }
 
-        /* OPTIMIZACIÓN PARA IMPRESIÓN / PDF */
-        @media print {
-            @page {
-                size: landscape;
-                margin: 1cm;
-            }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s;
+        }
 
-            body { background-color: white !important; }
-            
-            .container { 
-                box-shadow: none !important; 
-                margin: 0 !important; 
-                padding: 0 !important;
-                width: 100% !important; 
-                max-width: none !important; 
-            }
+        .tab-content.active {
+            display: block;
+        }
 
-            .btn-export { display: none !important; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-            .manual-item {
-                page-break-after: always;
-                break-inside: avoid;
-                padding-top: 10px;
-                width: 100%;
-            }
+        .accordion {
+            background-color: #f9f9f9;
+            color: var(--text);
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            text-align: left;
+            border: 1px solid var(--border);
+            outline: none;
+            transition: 0.4s;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
 
-            h2 { page-break-before: always; }
+        .active-acc, .accordion:hover {
+            background-color: #e8f5e9;
+            border-color: var(--primary);
+        }
 
-            .image-placeholder {
-                border: none !important;
-                background-color: transparent !important;
-                width: 100%;
-            }
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            display: none;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
 
-            .image-placeholder span {
-                display: none !important;
-            }
+        code {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
 
-            img {
-                max-width: 100%;
-                height: auto;
-                max-height: 16cm; /* Ajuste para que quepa en horizontal */
-                display: block;
-                margin: 0 auto;
-                page-break-inside: avoid;
-            }
+        .code-block {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        ul, ol {
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
-    <button class="btn-export" onclick="window.print()">Previsualizar y Guardar PDF</button>
-
-    <div class="container" id="manual-content">
+    <div class="container">
         <header>
-            <h1>MANUAL DE USUARIO: PURE INKA FOODS</h1>
-            <p>Guía Visual Completa</p>
+            <h1>Manual Interactivo de Sistema</h1>
+            <p>Pure Inka Foods - E-Commerce de Superalimentos</p>
         </header>
 
-        <!-- SECCION CLIENTE -->
-        <h2>1. MÓDULO DE CLIENTE</h2>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'ejecucion')">Instalación y Ejecución</button>
+            <button class="tab-btn" onclick="openTab(event, 'accesos')">Accesos de Prueba</button>
+            <button class="tab-btn" onclick="openTab(event, 'cliente')">Módulo Cliente</button>
+            <button class="tab-btn" onclick="openTab(event, 'admin')">Módulo Administrador</button>
+            <button class="tab-btn" onclick="openTab(event, 'seguridad')">Auditoría y Seguridad</button>
+        </div>
 
-        <div class="manual-item">
-            <h3>1.1 Página de Inicio (Home)</h3>
-            <p class="section-desc">Portal de entrada con productos destacados y banners promocionales.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: HOME</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Home Page">
+        <!-- Instalación y Ejecución -->
+        <div id="ejecucion" class="tab-content active">
+            <h2>1. Instalación y Ejecución del Sistema</h2>
+            <p>Sigue estos pasos para levantar el sistema localmente.</p>
+
+            <button class="accordion">1. Prerrequisitos y Configuración BD</button>
+            <div class="panel">
+                <ul>
+                    <li>Node.js instalado.</li>
+                    <li>Servidor MySQL activo.</li>
+                </ul>
+                <p><strong>Configuración de la Base de Datos:</strong></p>
+                <ol>
+                    <li>Dirígete a <code>Backend/src/config</code>.</li>
+                    <li>Abre el archivo <code>bd.js</code> (o <code>.env</code>) y actualiza el usuario, contraseña y nombre de la DB según tu entorno.</li>
+                    <li>Ejecuta en tu gestor MySQL:
+                        <ul>
+                            <li><code>DDL-3.sql</code></li>
+                            <li><code>DML-v1-InkaFood.sql</code></li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <button class="accordion">2. Instalación de Dependencias</button>
+            <div class="panel">
+                <p>Abre terminales independientes para Backend y Frontend y ejecuta:</p>
+                <div class="code-block">npm install</div>
+            </div>
+
+            <button class="accordion">3. Inicialización</button>
+            <div class="panel">
+                <p>Para el <strong>Backend</strong>:</p>
+                <div class="code-block">npm run dev</div>
+                <p>Para el <strong>Frontend</strong>:</p>
+                <div class="code-block">npm start</div>
+            </div>
+
+            <button class="accordion">4. Validación de Estado</button>
+            <div class="panel">
+                <p>Pruebas automatizadas:</p>
+                <ul>
+                    <li>Backend: <code>npm test</code></li>
+                    <li>Frontend: <code>ng test</code></li>
+                </ul>
+                <p>Salud del API: Visita <a href="http://localhost:5000/api/health" target="_blank">http://localhost:5000/api/health</a></p>
             </div>
         </div>
 
-        <div class="manual-item">
-            <h3>1.2 Tienda (Catálogo)</h3>
-            <p class="section-desc">Exploración de productos con filtros por categoría y búsqueda en tiempo real.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: SHOP / TIENDA</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Shop Page">
+        <!-- Accesos de Prueba -->
+        <div id="accesos" class="tab-content">
+            <h2>2. Accesos de Prueba</h2>
+            <p>Utiliza estas credenciales para probar los distintos módulos del sistema.</p>
+            
+            <button class="accordion">Rol Cliente</button>
+            <div class="panel">
+                <p>Apartado de Login Normal.</p>
+                <ul>
+                    <li><strong>Correo:</strong> <code>berna@gmail.com</code></li>
+                    <li><strong>Contraseña:</strong> <code>sasasa</code></li>
+                </ul>
+            </div>
+
+            <button class="accordion">Rol Administrador</button>
+            <div class="panel">
+                <p>Dirígete al apartado de Acceso Administrativo.</p>
+                <ul>
+                    <li><strong>Correo:</strong> <code>admin@pureinka.com</code></li>
+                    <li><strong>Contraseña:</strong> <code>Admin123</code></li>
+                </ul>
             </div>
         </div>
 
-        <div class="manual-item">
-            <h3>1.3 Detalle de Producto y Carrito</h3>
-            <p class="section-desc">Visualización de información detallada y gestión de artículos seleccionados.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: PRODUCTO / CARRITO</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Cart Page">
+        <!-- Módulo Cliente -->
+        <div id="cliente" class="tab-content">
+            <h2>3. Funcionalidades y Experiencia del Cliente</h2>
+            
+            <button class="accordion">Registro de Usuario y Doble Factor</button>
+            <div class="panel">
+                <p>Al registrar una nueva cuenta, el sistema enviará un código de seis dígitos para validar la identidad de forma segura. Para pruebas, revisa la consola del backend para ver el código emitido.</p>
+            </div>
+
+            <button class="accordion">Tienda y Sugerencias</button>
+            <div class="panel">
+                <p>La tienda muestra descripciones completas. Al ver un producto, el sistema sugiere automáticamente artículos similares relevantes.</p>
+            </div>
+
+            <button class="accordion">Carrito Persistente</button>
+            <div class="panel">
+                <p>Visualiza el número de productos agregados en tiempo real. Si agregas productos como invitado, estos se conservarán y sincronizarán automáticamente tras iniciar sesión.</p>
+            </div>
+
+            <button class="accordion">Checkout (Proceso de Pago)</button>
+            <div class="panel">
+                <ol>
+                    <li><strong>Dirección:</strong> Selecciona una guardada o agrega una nueva de forma dinámica.</li>
+                    <li><strong>Tipo de Envío:</strong> Selecciona una de las 3 opciones (el costo se actualiza en el resumen).</li>
+                    <li><strong>Métodos de Pago:</strong> Tarjetas (Stripe) y billeteras digitales (Yape, Plin).</li>
+                    <li><strong>Comprobante:</strong> Elige emitir Boleta o Factura.</li>
+                </ol>
+            </div>
+
+            <button class="accordion">Mi Perfil y Comprobantes</button>
+            <div class="panel">
+                <p>Historial completo de compras. Desde aquí puedes descargar tu comprobante de pago en formato PDF o cancelar un pedido si está en estado 'Procesando'.</p>
             </div>
         </div>
 
-        <div class="manual-item">
-            <h3>1.4 Proceso de Checkout (Pago)</h3>
-            <p class="section-desc">Finalización de compra: selección de dirección, método de pago y envío de comprobante.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: CHECKOUT</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Checkout Page">
+        <!-- Módulo Administrador -->
+        <div id="admin" class="tab-content">
+            <h2>4. Gestión del Administrador</h2>
+
+            <button class="accordion">Dashboard en Tiempo Real</button>
+            <div class="panel">
+                <p>Monitoreo dinámico de:</p>
+                <ul>
+                    <li>Ingresos reales.</li>
+                    <li>Ventas promedio.</li>
+                    <li>Cantidad de nuevos clientes.</li>
+                    <li><strong>Alertas visuales:</strong> Notificaciones si un producto alcanza stock crítico.</li>
+                </ul>
+            </div>
+
+            <button class="accordion">Catálogo de Productos</button>
+            <div class="panel">
+                <p>Control operativo total para gestionar, agregar o editar: stock, imágenes, precios y categorías de productos.</p>
+            </div>
+
+            <button class="accordion">Gestión de Pedidos</button>
+            <div class="panel">
+                <p>Actualiza los estados de envío (Procesando, Enviado, Entregado, Cancelado) para notificar al cliente del avance.</p>
+            </div>
+
+            <button class="accordion">Métodos de Pago</button>
+            <div class="panel">
+                <p>Activa o desactiva pasarelas y actualiza códigos QR o números de contacto para las billeteras digitales.</p>
             </div>
         </div>
 
-        <div class="manual-item">
-            <h3>1.5 Panel de Usuario</h3>
-            <p class="section-desc">Historial de pedidos, descarga de facturas y gestión de perfil personal.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: MI PERFIL</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Profile Page">
+        <!-- Auditoría y Seguridad -->
+        <div id="seguridad" class="tab-content">
+            <h2>5. Auditoría y Seguridad</h2>
+
+            <button class="accordion">Bloqueo de Intentos</button>
+            <div class="panel">
+                <p>El sistema cuenta con un mecanismo que bloquea automáticamente la cuenta tras 5 intentos fallidos de inicio de sesión.</p>
             </div>
-        </div>
 
-        <!-- SECCION ADMIN -->
-        <h2>2. MÓDULO DE ADMINISTRADOR</h2>
-
-        <div class="manual-item">
-            <h3>2.1 Dashboard Administrativo</h3>
-            <p class="section-desc">Resumen visual de métricas: ventas totales, usuarios y alertas de stock.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: DASHBOARD ADMIN</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Admin Dashboard">
-            </div>
-        </div>
-
-        <div class="manual-item">
-            <h3>2.2 Gestión de Pedidos</h3>
-            <p class="section-desc">Control total sobre los pedidos, validación de pagos y actualización de estados.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: GESTIÓN DE PEDIDOS</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Order Management">
-            </div>
-        </div>
-
-        <div class="manual-item">
-            <h3>2.3 Soporte y Mensajería</h3>
-            <p class="section-desc">Sistema de comunicación directa con clientes para resolver dudas.</p>
-            <div class="image-placeholder" onclick="triggerUpload(this)">
-                <span>SUBIR CAPTURA: MENSAJES</span>
-                <input type="file" accept="image/*" onchange="previewImage(this)">
-                <img alt="Messages Page">
+            <button class="accordion">Inspección de Logs</button>
+            <div class="panel">
+                <p>Todos los errores y registros de seguridad se pueden inspeccionar a detalle consultando los archivos generados en la carpeta <code>logs</code> del backend.</p>
             </div>
         </div>
     </div>
 
     <script>
-        function triggerUpload(el) {
-            el.querySelector('input').click();
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.className += " active";
         }
 
-        function previewImage(input) {
-            const placeholder = input.parentElement;
-            const span = placeholder.querySelector('span');
-            const img = placeholder.querySelector('img');
-            
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                    span.style.display = 'none';
-                    placeholder.style.borderStyle = 'none';
-                    placeholder.style.backgroundColor = 'transparent';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active-acc");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
         }
     </script>
 </body>
